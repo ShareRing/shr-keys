@@ -25,6 +25,8 @@ We use *Base58Check* to encode the final result. *Base58Check* is [Bitcoin key e
 Key Ecryption uses symmetric enryption AES-256 with Counter mode. Public key can be generated from Private Key.
 
 Steps to encrypt Private Key:
+
+
 * Generate *secret key* using *generateSecretKey*
 * encrypt using above *secret key*, input data in *string* format
 * decrypt using above *secret key*, input data is *hex format* of ciphertext
