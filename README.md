@@ -28,6 +28,10 @@ We use *Base58Check* to encode the final result. *Base58Check* is [Bitcoin key e
 
 ## Example
 
+* `address.js` : keys generation
+* `encode.js` : encoding public key into adress and decode address into publickey. 
+* There is an usage example inside `encode.js`
+
 ## Others
 
 
