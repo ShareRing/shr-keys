@@ -20,6 +20,17 @@ We use *Base58Check* to encode the final result. *Base58Check* is [Bitcoin key e
 * No punctuation to line-break
 * Double-clicking to select the whole number as one word is feasible
 
+## Key Encryption
+
+Key Ecryption uses symmetric enryption AES-256 with Counter mode. Public key can be generated from Private Key.
+
+Steps to encrypt Private Key:
+* Generate *secret key* using *generateSecretKey*
+* encrypt using above *secret key*, input data in *string* format
+* decrypt using above *secret key*, input data is *hex format* of ciphertext
+
+
+
 ## Inspiration
   * [MNID](https://github.com/uport-project/mnid)
   * Ethereum key schema
@@ -31,6 +42,7 @@ We use *Base58Check* to encode the final result. *Base58Check* is [Bitcoin key e
 * `address.js` : keys generation
 * `encode.js` : encoding public key into adress and decode address into publickey. 
 * There is an usage example inside `encode.js`
+* `encrypt.js`: encrypt using aes-256
 
 ## Others
 
