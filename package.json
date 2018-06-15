@@ -1,0 +1,17 @@
+{
+  "name": "shr-keys",
+  "version": "0.0.1",
+  "description": "Keys and Address generation and manipulation",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base-x": "^3.0.4",
+    "buffer": "^5.1.0",
+    "eth-lib": "^0.2.8",
+    "js-sha3": "^0.7.0"
+  }
+}
