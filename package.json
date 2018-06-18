@@ -2,7 +2,7 @@
   "name": "shr-keys",
   "version": "0.0.1",
   "description": "Keys and Address generation and manipulation",
-  "main": "test.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
