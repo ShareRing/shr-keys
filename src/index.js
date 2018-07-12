@@ -1,6 +1,6 @@
-import Address from 'address';
-import Encode from 'encode';
-import Encrypt from 'encrypt';
+import Address from './address';
+import Encode from './encode';
+import Encrypt from './encrypt';
 
 
 export default {
