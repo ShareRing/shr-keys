@@ -2,6 +2,7 @@ const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const pbkdf2 = require('pbkdf2');
 const aesjs = require('aes-js');
+let crypto = require('crypto')
 
 KEY_LENGTH = 256; // Length of secret key. Can be 128, 192, or 256
 
@@ -52,8 +53,36 @@ const generateSecretKey = (password, salt) => {
     return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
 }
 
+/**
+ * generate public key
+ * @param {Buffer} private key  
+ * @return {Buffer} -public key
+ */
+const publicKeyFromPrivateKey = privateKey => {
+   let publicKey = secp256k1.keyFromPrivate(privateKey)
+    return publicKey;
+}
 
-module.exports = { encrypt, decrypt, generateSecretKey };
+/**
+ * sign a message
+ * @param {string} msg - message to be signed  
+ * @param {string} privatekey  
+ * @return {Buffer} - signature
+ */
+const sign = (msg, privateKey) => {   
+  const signature = secp256k1.sign(msg, privateKey);
+    return signature;
+}
+
+const verifySignature = (msg, signature, publicKey) => {
+
+    const verified = secp256k1.verify(msg, signature, publicKey);
+    return verified;
+
+}
+
+
+module.exports = { encrypt, decrypt, generateSecretKey, publicKeyFromPrivateKey, sign, verifySignature };
 
 
 if ( require.main == module ){

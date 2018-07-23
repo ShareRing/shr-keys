@@ -3,6 +3,7 @@ const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 
 const {keccak256, keccak256s} = require("./hash");
 const Bytes = require("./bytes");
+const Encrypt = require("./encrypt")
 
 const create = entropy => {
   const innerHex = keccak256(Bytes.concat(Bytes.random(32), entropy || Bytes.random(32)));
@@ -21,7 +22,7 @@ const toChecksum = address => {
   return checksumAddress;
 }
 
-const fromPrivate = privateKey => {
+const fromPrivate = privateKey => { 
   const buffer = new Buffer(privateKey.slice(2), "hex");
   const ecKey = secp256k1.keyFromPrivate(buffer);
   const publicKey = "0x" + ecKey.getPublic(false, 'hex').slice(2);
