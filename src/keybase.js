@@ -1,9 +1,9 @@
 let Address = require('./address.js');
 let Encrypt = require('./encrypt.js');
 let bip39 = require('bip39')
-let crypto = require('crypto')
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1");
+const Bytes = require("./bytes.js")
 
 
 
@@ -21,7 +21,8 @@ const Algorithm = {
 class KeyInfo {
 
     constructor(name,pass) {
-        let salt = crypto.randomBytes(16).toString();
+        let salt = Bytes.random(16).toString()//crypto.randomBytes(16).toString();
+        console.log(salt)
         this.privKey = Encrypt.generateSecretKey(pass, salt)
         this.pubKey = Encrypt.publicKeyFromPrivateKey(this.privKey)            
         this.pass = pass
