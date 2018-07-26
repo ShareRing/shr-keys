@@ -3,7 +3,7 @@ const Encode = require('./encode');
 const Encrypt = require('./encrypt');
 
 
-export default {
+module.exports = {
     createAccount: function (entropy) {
         return Address.create(entropy);
     },
