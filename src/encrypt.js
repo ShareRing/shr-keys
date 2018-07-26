@@ -1,8 +1,7 @@
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
-const pbkdf2 = require('pbkdf2');
+const CryptoJS = require('crypto-js');
 const aesjs = require('aes-js');
-let crypto = require('crypto')
 
 KEY_LENGTH = 256; // Length of secret key. Can be 128, 192, or 256
 
@@ -50,7 +49,11 @@ const decrypt = (ciphertext, secretKey) => {
  * @return {Buffer} - array of integer, each integer represent a byte. Array length = KEY_LENGTH / 8
  */
 const generateSecretKey = (password, salt) => {
-    return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
+    //return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
+    return CryptoJS.PBKDF2(password, salt, {
+        keySize: 512/32,
+        iterations: 1
+    })
 }
 
 /**
