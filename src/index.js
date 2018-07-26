@@ -1,6 +1,6 @@
-import Address from './address';
-import Encode from './encode';
-import Encrypt from './encrypt';
+const Address = require('./address');
+const Encode = require('./encode');
+const Encrypt = require('./encrypt');
 
 
 export default {
