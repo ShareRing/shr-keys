@@ -2,6 +2,7 @@ const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const CryptoJS = require('crypto-js');
 const aesjs = require('aes-js');
+//let crypto = require('crypto')
 
 KEY_LENGTH = 256; // Length of secret key. Can be 128, 192, or 256
 
