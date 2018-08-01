@@ -1,6 +1,7 @@
 const Address = require('./address');
 const Encode = require('./encode');
 const Encrypt = require('./encrypt');
+const Hash = require('./hash');
 
 
 module.exports = {
@@ -52,5 +53,11 @@ module.exports = {
         }
 
     },
-
+    hash: function (input){
+        if ( input ) {
+            return Hash.keccak256(input)
+        } else {
+            return '';
+        }
+    },
 }
