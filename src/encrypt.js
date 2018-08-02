@@ -1,46 +1,37 @@
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const CryptoJS = require('crypto-js');
-const aesjs = require('aes-js');
-//let crypto = require('crypto')
 
-KEY_LENGTH = 256; // Length of secret key. Can be 128, 192, or 256
+KEY_LENGTH = 256; // 128/32 or 256/32 or 512/32
 
 /**
  * encrypt *plaintext* using *secretKey*, supposedly generated uisng *generateSecretKey* function
  * @param {string} plaintext - text to be encrypted
- * @param {array} secretKey - key used to encrypt plaintext
+ * @param {string} secretKey - key used to encrypt plaintext
  * @return {string} hex encoded ciphertext
  */
 const encrypt = (plaintext, secretKey) => {
-    var textBytes = aesjs.utils.utf8.toBytes(plaintext);
 
-    var aesCtr = new aesjs.ModeOfOperation.ctr(secretKey, new aesjs.Counter(5));
-    
-    var encryptedBytes = aesCtr.encrypt(textBytes);
-    
-    var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+    let encryptedText = CryptoJS.AES.encrypt(plaintext, secretKey, {mode: CryptoJS.mode.CTR} )
 
-    return encryptedHex;
+    return encryptedText.toString();
 }
 
 
 /**
  * decrypt *ciphertext* using *secretKey*, supposedly generated using *generateSecretKey* function
  * @param {string} ciphertext - hex encoded ciphertext to be decrypted
- * @param {array} secretKey - key used to decrypt ciphertext
+ * @param {string} secretKey - key used to decrypt ciphertext
  * @return {string} plaintext
  */
 const decrypt = (ciphertext, secretKey) => {
-    var byteData = aesjs.utils.hex.toBytes(ciphertext);
 
-    var aesCtr = new aesjs.ModeOfOperation.ctr(secretKey, new aesjs.Counter(5));
 
-    var decryptedBytes = aesCtr.decrypt(byteData);
+    let decryptedBytes = CryptoJS.AES.decrypt(ciphertext, secretKey, {mode: CryptoJS.mode.CTR} );
 
-    var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+    let decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
 
-    return decryptedText;
+    return decryptedText.toString();
 }
 
 /**
@@ -51,10 +42,11 @@ const decrypt = (ciphertext, secretKey) => {
  */
 const generateSecretKey = (password, salt) => {
     //return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
-    return CryptoJS.PBKDF2(password, salt, {
-        keySize: 512/32,
-        iterations: 1
-    })
+    return CryptoJS.PBKDF2(password, salt,
+                           {
+                              keySize: KEY_LENGTH/32,
+                              iterations: 100
+                           }).toString()
 }
 
 /**
@@ -96,10 +88,10 @@ if ( require.main == module ){
     
     plaintext = "ShareRing";
 
-    ciphertext = encrypt(plaintext, key);
+    ciphertext = encrypt(plaintext, key.toString());
     console.log("Encrypted data: ", ciphertext);
 
 
-    result = decrypt(ciphertext, key);
+    result = decrypt(ciphertext, key.toString());
     console.log("Decrypted data:", result);
 }
