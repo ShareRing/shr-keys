@@ -16,7 +16,7 @@ module.exports = {
      */
     fromPrivate: function (privateKey) {
         return Address.fromPrivate(privateKey)
-    }
+    },
     /*
      * Symmetric encryption. 
      * A symmetric encryption is an ecryption algorithim that encrypt and decrypt using the same secret
