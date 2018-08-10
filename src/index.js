@@ -2,6 +2,7 @@ const Address = require('./address');
 const Encode = require('./encode');
 const Encrypt = require('./encrypt');
 const Hash = require('./hash');
+const Sign = require('./sign');
 
 
 module.exports = {
@@ -90,4 +91,6 @@ module.exports = {
     /*
      * Sign a transaction
      */
+    sign: Sign.sign,
+    verify: Sign.verify,
 }
