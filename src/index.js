@@ -5,9 +5,16 @@ const Hash = require('./hash');
 
 
 module.exports = {
+    /*
+     * Given an entropy ~ random string. Output private key, publickey and address
+     */
     createAccount: function (entropy) {
         return Address.create(entropy);
     },
+    /*
+     * Symmetric encryption. 
+     * A symmetric encryption is an ecryption algorithim that encrypt and decrypt using the same secret
+     */
     encrypt: function (plaintext, secretKey) {
         if(plaintext && secretKey)
         {
@@ -17,6 +24,8 @@ module.exports = {
         }
 
     },
+    /* Generate secrete key to be used in symmetric encryption and decryption
+     */
     generateSecretKey: function (password, salt) {
         if(password && salt)
         {
@@ -26,6 +35,9 @@ module.exports = {
         }
 
     },
+    /*
+     * Symmetric decryption
+     */
     decrypt: function (ciphertext, secretKey) {
         if(ciphertext && secretKey)
         {
@@ -35,6 +47,9 @@ module.exports = {
         }
 
     },
+    /*
+     * Encode address with neworkID to return address
+     */
     encode: function ({network, address}) {
         if(network && address)
         {
@@ -44,6 +59,9 @@ module.exports = {
         }
 
     },
+    /*
+     * Decode an address and output address and networkID
+     */
     decode: function (encoded) {
         if(encoded)
         {
@@ -53,6 +71,9 @@ module.exports = {
         }
 
     },
+    /*
+     * A hash function using keccak256, similar to SHA3
+     */
     hash: function (input){
         if ( input ) {
             return Hash.keccak256(input)
@@ -60,4 +81,7 @@ module.exports = {
             return '';
         }
     },
+    /*
+     * Sign a transaction
+     */
 }
