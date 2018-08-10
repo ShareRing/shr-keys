@@ -19,7 +19,7 @@ function checksum (payload) {
 
 
 /**
- * encode Ethereum address and network to ShareLEedger address
+ * encode Ethereum address and network to ShareLedger address
  * ShareLedger address: base58 encode of (networkID + Ethereum address + checksum)
  *
  * @param {string} network - hex value of network, prefixed by '0x'
