@@ -14,25 +14,37 @@ const create = entropy => {
 }
 
 const toChecksum = address => {
-  const addressHash = keccak256s(address.slice(2));
-  let checksumAddress = "0x";
-  for (let i = 0; i < 40; i++)
-    checksumAddress += parseInt(addressHash[i + 2], 16) > 7
-      ? address[i + 2].toUpperCase()
-      : address[i + 2];
+  //const addressHash = keccak256s(address.slice(2));
+  address = utils.cleanHex(address)
+  const addressHash = keccak256s(address);
+  //let checksumAddress = "0x";
+  let checksumAddress = "";
+
+  //for (let i = 2; i < 42; i++)
+  for ( let i = 0; i < 40; i++ )
+    checksumAddress += parseInt(addressHash[i], 16) > 7
+      ? address[i].toUpperCase()
+      : address[i];
   return checksumAddress;
 }
 
 
 const addressFromPublic = publicKey => {
+  publicKey = utils.cleanHex(publicKey)
+
   // Hash of byte array of public key
   const publicHash = keccak256(utils.hexToBytes(publicKey));
-  const address = toChecksum("0x" + publicHash.slice(-40));
+
+  // Hashing including "0x"
+  const address = toChecksum(publicHash.slice(-40));
   return address
 }
 
 const fromPrivate = privateKey => { 
-  const buffer = new Buffer(privateKey.slice(2), "hex");
+  privateKey = utils.cleanHex(privateKey)
+
+
+  const buffer = new Buffer(privateKey, "hex");
   const ecKey = secp256k1.keyFromPrivate(buffer);
 
   // Public Key without "0x"
@@ -54,5 +66,6 @@ module.exports = { create, toChecksum, fromPrivate };
 
 
 if (require.main == module){
-    create("test")
+    console.log(create("test"))
+    console.log(fromPrivate("ab83994cf95abe45b9d8610524b3f8f8fd023d69f79449011cb5320d2ca180c5"))
 }

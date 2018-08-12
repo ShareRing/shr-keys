@@ -5,13 +5,22 @@ const utils = require('./utils');
 
 
 
-
+/*
+ * Sign data using privateKey
+ * @param {string} privateKey - hex string representing byte array
+ * @param {string} data - string of data to be signed
+ * @return {string} return - hex representation of DER signature
+ */
 const sign = (privateKey, data) => {
+    privateKey = utils.cleanHex(privateKey)
 	let mesHash = CryptoJS.SHA256(data).toString()
-    let signature = secp256k1.sign(mesHash, privateKey.slice(2), {canonical: true})
+    let signature = secp256k1.sign(mesHash, privateKey, {canonical: true})
     return utils.bytesToHex(signature.toDER())
 }
-
+/*
+ * verify - signed data using public key
+ * @param {string} publicKey
+ */
 const verify = (publicKey, data, sig) => {
 	let mesHash = CryptoJS.SHA256(data).toString()
 	return secp256k1.verify(mesHash, sig, publicKey)
@@ -27,12 +36,14 @@ if (require.main == module){
 
 
 	// Sign
-    let privateKey = "0xab83994cf95abe45b9d8610524b3f8f8fd023d69f79449011cb5320d2ca180c5"
+    let privateKey = "ab83994cf95abe45b9d8610524b3f8f8fd023d69f79449011cb5320d2ca180c5"
 	let res = address.fromPrivate(privateKey)
 
+    console.log("Address:", res.address)
 
 	let createTx = {
-		"creator": res.address.toUpperCase().slice(2),
+        //"creator":"CF54B74BB4AC9380BFF00F2BE911FC61E541C635",
+        "creator": res.address.toUpperCase(),
 		"hash":"MTExMTEx",
 		"uuid": "112233",
 		"status":true,
@@ -40,10 +51,12 @@ if (require.main == module){
 	}
 
 	let message = JSON.stringify(createTx)
+    console.log("Message:", message)
 	let signature = sign(privateKey, message)
+    console.log("Sig:", signature)
 
 	// Verify
-    const buffer = new Buffer(privateKey.slice(2), "hex");
+    const buffer = new Buffer(privateKey, "hex");
 	const ecKey = secp256k1.keyFromPrivate(buffer);
 	let mesHash = CryptoJS.SHA256(message).toString()
 	let pubKey = ecKey.getPublic(false, "hex")

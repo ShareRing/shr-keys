@@ -25,7 +25,20 @@ function bytesToHex(bytes) {
     return hex.join("");
 }
 
+/*
+ * Remove 0x prefix if presents
+ * @param {string} a hex string prefixed with 0x or not
+ * @return {string} a hex string without 0x
+ */
+function cleanHex(str) {
+    if ( str.startsWith("0x") )
+        return str.slice(2)
+    else
+        return str
+}
+
 module.exports = {
     hexToBytes,
     bytesToHex,
+    cleanHex,
 }
