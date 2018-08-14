@@ -62,8 +62,7 @@ if (require.main == module){
     console.log("Sig:", signature)
 
 	// Verify
-    const buffer = new Buffer(privateKey, "hex");
-	const ecKey = secp256k1.keyFromPrivate(buffer);
+	const ecKey = secp256k1.keyFromPrivate(privateKey);
 	let mesHash = CryptoJS.SHA256(message).toString()
 	let pubKey = ecKey.getPublic(false, "hex")
 	pkBytes = utils.hexToBytes(pubKey)

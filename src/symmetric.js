@@ -38,7 +38,7 @@ const decrypt = (ciphertext, secretKey) => {
  * generate secret key
  * @param {string} password - user input password
  * @param {string} salt - system salt
- * @return {Buffer} - array of integer, each integer represent a byte. Array length = KEY_LENGTH / 8
+ * @return {string} - hex presentation. Array length = KEY_LENGTH / 8
  */
 const generateSecretKey = (password, salt) => {
     //return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
@@ -52,7 +52,7 @@ const generateSecretKey = (password, salt) => {
 
 
 
-module.exports = { encrypt, decrypt, generateSecretKey, publicKeyFromPrivateKey, sign, verifySignature };
+module.exports = { encrypt, decrypt, generateSecretKey};
 
 
 if ( require.main == module ){

@@ -42,8 +42,7 @@ const fromPrivate = privateKey => {
   privateKey = utils.cleanHex(privateKey)
 
 
-  const buffer = new Buffer(privateKey, "hex");
-  const ecKey = secp256k1.keyFromPrivate(buffer);
+  const ecKey = secp256k1.keyFromPrivate(privateKey);
 
   // Public Key without "0x"
   const publicKey = ecKey.getPublic(false, 'hex');
