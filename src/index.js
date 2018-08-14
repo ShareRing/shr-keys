@@ -2,7 +2,7 @@ const Address = require('./address');
 const Encode = require('./encode');
 const Symmetric = require('./symmetric');
 const Hash = require('./hash');
-const Sign = require('./sign');
+const Asymmetric = require('./asymmetric');
 const KeyPair = require('./keybase');
 
 
@@ -92,7 +92,7 @@ module.exports = {
     /*
      * Sign a transaction
      */
-    sign: Sign.sign, // sign a transasction
-    verify: Sign.verify, // verify a transaction
+    sign: Asymmetric.sign, // sign a transasction
+    verify: Asymmetric.verify, // verify a transaction
     KeyPair: KeyPair.KeyPair, // KeyPair
 }
