@@ -1,6 +1,7 @@
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const CryptoJS = require('crypto-js');
+
 const utils = require('./utils');
 
 
@@ -9,7 +10,7 @@ const utils = require('./utils');
  * Sign data using privateKey
  * @param {string} privateKey - hex string representing byte array
  * @param {string} data - string of data to be signed
- * @return {string} return - hex representation of DER signature
+ * @return {string} return - hex representation of DER encoded signature
  */
 const sign = (privateKey, data) => {
     privateKey = utils.cleanHex(privateKey)
@@ -17,14 +18,19 @@ const sign = (privateKey, data) => {
     let signature = secp256k1.sign(mesHash, privateKey, {canonical: true})
     return utils.bytesToHex(signature.toDER())
 }
+
 /*
  * verify - signed data using public key
- * @param {string} publicKey
+ * @param {string} publicKey - hex string
+ * @param {string} data - message to be verified
+ * @param {string} sig - hex representation of DER encoded signature
+ * @return {boolean} true/false
  */
 const verify = (publicKey, data, sig) => {
 	let mesHash = CryptoJS.SHA256(data).toString()
 	return secp256k1.verify(mesHash, sig, publicKey)
 }
+
 
 module.exports = {
     sign,

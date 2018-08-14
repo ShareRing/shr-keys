@@ -49,33 +49,7 @@ const generateSecretKey = (password, salt) => {
                            }).toString()
 }
 
-/**
- * generate public key
- * @param {Buffer} private key  
- * @return {Buffer} -public key
- */
-const publicKeyFromPrivateKey = privateKey => {
-   let publicKey = secp256k1.keyFromPrivate(privateKey)
-    return publicKey;
-}
 
-/**
- * sign a message
- * @param {string} msg - message to be signed  
- * @param {string} privatekey  
- * @return {Buffer} - signature
- */
-const sign = (msg, privateKey) => {   
-  const signature = secp256k1.sign(msg, privateKey);
-    return signature;
-}
-
-const verifySignature = (msg, signature, publicKey) => {
-
-    const verified = secp256k1.verify(msg, signature, publicKey);
-    return verified;
-
-}
 
 
 module.exports = { encrypt, decrypt, generateSecretKey, publicKeyFromPrivateKey, sign, verifySignature };
