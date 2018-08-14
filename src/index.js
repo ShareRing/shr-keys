@@ -1,6 +1,6 @@
 const Address = require('./address');
 const Encode = require('./encode');
-const Encrypt = require('./encrypt');
+const Symmetric = require('./symmetric');
 const Hash = require('./hash');
 const Sign = require('./sign');
 const KeyPair = require('./keybase');
@@ -26,7 +26,7 @@ module.exports = {
     encrypt: function (plaintext, secretKey) {
         if(plaintext && secretKey)
         {
-            return Encrypt.encrypt(plaintext, secretKey)
+            return Symmetric.encrypt(plaintext, secretKey)
         }else {
             return '';
         }
@@ -37,7 +37,7 @@ module.exports = {
     generateSecretKey: function (password, salt) {
         if(password && salt)
         {
-            return Encrypt.generateSecretKey(password, salt)
+            return Symmetric.generateSecretKey(password, salt)
         }else {
             return '';
         }
