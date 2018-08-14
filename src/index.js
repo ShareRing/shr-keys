@@ -3,6 +3,7 @@ const Encode = require('./encode');
 const Encrypt = require('./encrypt');
 const Hash = require('./hash');
 const Sign = require('./sign');
+const KeyPair = require('./keybase');
 
 
 module.exports = {
@@ -91,6 +92,7 @@ module.exports = {
     /*
      * Sign a transaction
      */
-    sign: Sign.sign,
-    verify: Sign.verify,
+    sign: Sign.sign, // sign a transasction
+    verify: Sign.verify, // verify a transaction
+    KeyPair: KeyPair.KeyPair, // KeyPair
 }
