@@ -3,14 +3,12 @@ const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 
 const {keccak256, keccak256s} = require("./hash");
 const Bytes = require("./bytes");
-const Encrypt = require("./encrypt");
 const utils = require("./utils");
 
-const create = entropy => {
-  const innerHex = keccak256(Bytes.concat(Bytes.random(32), entropy || Bytes.random(32)));
-  const middleHex = Bytes.concat(Bytes.concat(Bytes.random(32), innerHex), Bytes.random(32));
-  const outerHex = keccak256(middleHex);
-  return fromPrivate(outerHex);
+
+const create = mnemonic => {
+    const mnemonicHash = keccak256(mnemonic)
+    return fromPrivate(mnemonicHash)
 }
 
 const toChecksum = address => {
@@ -40,7 +38,7 @@ const addressFromPublic = publicKey => {
   return address
 }
 
-const fromPrivate = privateKey => { 
+const fromPrivate = privateKey => {
   privateKey = utils.cleanHex(privateKey)
 
 
@@ -66,6 +64,10 @@ module.exports = { create, toChecksum, fromPrivate };
 
 
 if (require.main == module){
-    console.log(create("test"))
-    console.log(fromPrivate("ab83994cf95abe45b9d8610524b3f8f8fd023d69f79449011cb5320d2ca180c5"))
+    let kb = require('./keybase')
+    let mnemonic = kb.KeyPair.createMnemonic(kb.Language.English, kb.Algorithm.SECP256K1)
+    console.log("Mnemonic:", mnemonic)
+    console.log("Address:", create(mnemonic))
+    console.log("Custom Mnemonic:", "trang tran")
+    console.log("Address:", create("trang tran"))
 }
