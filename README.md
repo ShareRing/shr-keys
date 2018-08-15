@@ -20,9 +20,10 @@ We use *Base58Check* to encode the final result. *Base58Check* is [Bitcoin key e
 * No punctuation to line-break
 * Double-clicking to select the whole number as one word is feasible
 
-## Key Encryption
+## Key Symmetric Encryption
 
 Key Ecryption uses symmetric enryption AES-256 with Counter mode. Public key can be generated from Private Key.
+This key is to encrypt KeyPair for local storage in Mobile and WebPortal. Defined in `symmetric.js`
 
 Steps to encrypt Private Key:
 
@@ -31,6 +32,25 @@ Steps to encrypt Private Key:
 * encrypt using above *secret key*, input data in *string* format
 * decrypt using above *secret key*, input data is *hex format* of ciphertext
 
+
+## Key Asymetric Signing and Verification
+
+Key Asymmetric uses SECP256K1 algorithm. Defined in `asymmetric.js`
+
+* *Sign* requires privateKey in hex-encoded string and data of string type
+* *Verify* requires publicKey and signature in hex-encoded string and data of string type
+* Note that data is hashed using SHA256 before signing
+
+## KeyPair class
+
+KeyPair provides methods for keys creation and usage. KeyPair is used to sign transactions in ShareLedger. Defined in `keybase.js`
+
+* *KeyPair creation*: can be done using `KeyPair.fromMnenomic`, `KeyPair.fromPrivateKey` or `KeyPair.fromEncryptedKeyPair`
+    * `fromMnemonic`: mnemonic is a list of 12 words generated using `KeyPair.createMnemonic`
+    * `fromPrivateKey`: re-generate the whole KeyPair from *private key*
+    * `fromEncryptedKeyPair`: recover KeyPair from an encrypted string using method `encrypted`
+
+* *KeyPair sign and verify* uses according *sign* and *verify* functions
 
 
 ## Inspiration
@@ -44,20 +64,4 @@ Steps to encrypt Private Key:
 * `address.js` : keys generation
 * `encode.js` : encoding public key into adress and decode address into publickey. 
 * There is an usage example inside `encode.js`
-* `encrypt.js`: encrypt using aes-256
-
-## Others
-
-
-* Should we support seed?
-
-
-
-
-
-
-
-
-
-
-
+* `symmetric.js`: encrypt using aes-256

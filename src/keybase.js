@@ -5,6 +5,7 @@ const secp256k1 = new (elliptic.ec)("secp256k1");
 const Address = require('./address.js');
 const Encrypt = require('./asymmetric.js');
 const Bytes = require("./bytes.js")
+const Symmetric = require('./symmetric.js');
 
 
 
@@ -49,9 +50,13 @@ class KeyPair {
      * @return {boolean} true/false
      */
     verify(msg, signature) {
-        return Encrypt.verifySignature(msg, signature, this.pubKey)
+        console.log("PubKey", this.pubKey)
+        return Encrypt.verify(this.pubKey, msg, signature)
     }
-
+    
+    /**
+     * stringify - turn this object into a JSON string
+     */
     stringify() {
         let obj = {
             privateKey: this.privKey,
@@ -63,7 +68,36 @@ class KeyPair {
     }
 
 
+    /**
+     * encrypted - get encrypted version of this keyPair
+     * @param {string} secretKey - hex representation of secretKey used to encrypt this keyPair
+     */
+    encrypted(secretKey){
+        let obj = [this.privKey, this.pubKey, this.address]
+        return Symmetric.encrypt(JSON.stringify(obj), secretKey)
+    }
+
+
 }
+
+/**
+ * createMnemonic - create a list of 12 words as mnemonic as a base for privateKey generation
+ * @param {string} language - one type of language. Currently only support English. See Enum Language defined in this file
+ * @param {string} algorithm - which algorithm to be used. See enum Algorithm defined in this file.
+ * @return {string} mnemonic - a list of 12 words
+ */
+KeyPair.createMnemonic = function (language, algorithm) {
+    language = language || Language.English;
+    if (language != Language.English) throw Error("Only Support English now")
+    algorithm = algorithm || Algorithm.SECP256K1
+    if (algorithm != Algorithm.SECP256K1) throw Error("Only support secp256k1 now")
+
+    let randomBytes = Bytes.random(16) // 128 bits
+    let mnemonic = bip39.entropyToMnemonic(randomBytes.toString('hex').slice(2)) //  12 word phrase
+
+    return mnemonic
+}
+
 
 /**
  * fromPrivateKey - create KeyPair from privateKey
@@ -90,21 +124,16 @@ KeyPair.fromMnemonic = function(mnemonic) {
 }
 
 /**
- * createMnemonic - create a list of 12 words as mnemonic as a base for privateKey generation
- * @param {string} language - one type of language. Currently only support English. See Enum Language defined in this file
- * @param {string} algorithm - which algorithm to be used. See enum Algorithm defined in this file.
- * @return {string} mnemonic - a list of 12 words
+ * fromEncryptedKeyPair - decrypt an encrypted keyPair
+ *
+ * @param {string} encryptedKP - hex-encoded encrypted keypair
+ * @param {string} secretKey - hex-encoded key used to decrypt
+ * @return {KeyPair} KeyPair
  */
-KeyPair.createMnemonic = function (language, algorithm) {
-    language = language || Language.English;
-    if (language != Language.English) throw Error("Only Support English now")
-    algorithm = algorithm || Algorithm.SECP256K1
-    if (algorithm != Algorithm.SECP256K1) throw Error("Only support secp256k1 now")
+KeyPair.fromEncryptedKeyPair = function (encryptedKP, secretKey) {
+    let obj =  JSON.parse(Symmetric.decrypt(encryptedKP, secretKey))
+    return new KeyPair(obj[0], obj[1], obj[2])
 
-    let randomBytes = Bytes.random(16) // 128 bits
-    let mnemonic = bip39.entropyToMnemonic(randomBytes.toString('hex').slice(2)) //  12 word phrase
-
-    return mnemonic
 }
 
 
@@ -180,9 +209,29 @@ if (require.main === module) {
 
     let mne = KeyPair.createMnemonic()
     console.log(mne)
+
     let kp = KeyPair.fromMnemonic(mne)
     console.log(kp)
+
     let kp1 = KeyPair.fromPrivateKey(kp.privKey)
-    console.log(kp1.stringify())
+    console.log(kp1)
+
+    console.log("Should has the same value?", kp === kp1)
+    
+    let secretKey = Symmetric.generateSecretKey("123", "123")
+    console.log("SecretKey:", secretKey)
+
+    let encryptedKP = kp.encrypted(secretKey)
+    console.log("Encrypt:", encryptedKP)
+
+    let decrypted = KeyPair.fromEncryptedKeyPair(encryptedKP, secretKey)
+    console.log(decrypted)
+
+
+    let msg = "Trang"
+    let signature = kp.sign(msg)
+    console.log("Signature:", signature)
+
+    console.log("Verified?:", kp.verify(msg, signature))
 
 }

@@ -25,8 +25,6 @@ const encrypt = (plaintext, secretKey) => {
  * @return {string} plaintext
  */
 const decrypt = (ciphertext, secretKey) => {
-
-
     let decryptedBytes = CryptoJS.AES.decrypt(ciphertext, secretKey, {mode: CryptoJS.mode.CTR} );
 
     let decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);

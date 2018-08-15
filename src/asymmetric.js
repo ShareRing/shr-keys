@@ -14,8 +14,9 @@ const utils = require('./utils');
  */
 const sign = (privateKey, data) => {
     privateKey = utils.cleanHex(privateKey)
-	let mesHash = CryptoJS.SHA256(data).toString()
-    let signature = secp256k1.sign(mesHash, privateKey, {canonical: true})
+    let mesHash = CryptoJS.SHA256(data).toString()
+    let privKeyBytes = utils.hexToBytes(privateKey)
+    let signature = secp256k1.sign(mesHash, privKeyBytes, {canonical: true})
     return utils.bytesToHex(signature.toDER())
 }
 
@@ -27,8 +28,9 @@ const sign = (privateKey, data) => {
  * @return {boolean} true/false
  */
 const verify = (publicKey, data, sig) => {
+    let pubKeyBytes = utils.hexToBytes(publicKey)
 	let mesHash = CryptoJS.SHA256(data).toString()
-	return secp256k1.verify(mesHash, sig, publicKey)
+	return secp256k1.verify(mesHash, sig, pubKeyBytes)
 }
 
 
