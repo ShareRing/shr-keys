@@ -1,7 +1,8 @@
 const Address = require('./address');
 const Encode = require('./encode');
 const Symmetric = require('./symmetric');
-const Hash = require('./hash');
+//const Hash = require('./hash');
+const CryptoJS = require('crypto-js');
 const Asymmetric = require('./asymmetric');
 const KeyPair = require('./keybase');
 
@@ -84,7 +85,8 @@ module.exports = {
      */
     hash: function (input){
         if ( input ) {
-            return Hash.keccak256(input)
+            return CryptoJS.SHA256(input).toString()
+            //return Hash.keccak256(input)
         } else {
             return '';
         }
