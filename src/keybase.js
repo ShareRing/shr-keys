@@ -206,32 +206,44 @@ if (require.main === module) {
                 console.log(JSON.par se(val))
     }) */
 
-
+    // Generate a mnemonic
     let mne = KeyPair.createMnemonic()
     console.log(mne)
-
+    
+    // Generate KeyPair from Mnemonic
+    // KeyPair = {"address": xxxx,
+    //             "privKey": xxxx,
+    //             "pubKey": xxxx}
     let kp = KeyPair.fromMnemonic(mne)
     console.log(kp)
-
+    
+    // Generate KeyPair from PrivateKey
     let kp1 = KeyPair.fromPrivateKey(kp.privKey)
     console.log(kp1)
 
+    // KeyPair generated from Mnemonic and PrivateKey should be the same
     console.log("Should has the same value?", kp === kp1)
     
+    // Generate secretKey to encrypt KeyPair
+    // Symmetric.generateSecretKey(password, salt)
     let secretKey = Symmetric.generateSecretKey("123", "123")
     console.log("SecretKey:", secretKey)
-
+    
+    // Encrypt KeyPair into a ciphertext
     let encryptedKP = kp.encrypted(secretKey)
     console.log("Encrypt:", encryptedKP)
-
+    
+    // Decrypt the ciphertext into KeyPair
     let decrypted = KeyPair.fromEncryptedKeyPair(encryptedKP, secretKey)
     console.log(decrypted)
 
-
+    
+    // Using KeyPair to Sign a message
     let msg = "Trang"
     let signature = kp.sign(msg)
     console.log("Signature:", signature)
 
+    // Using KeyPair to verify a message
     console.log("Verified?:", kp.verify(msg, signature))
 
 }
