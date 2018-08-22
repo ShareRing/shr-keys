@@ -1,4 +1,5 @@
-const bip39 = require('bip39')
+const bip39 = require('react-native-bip39')
+//const bip39 = require('bip39')
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1");
 
