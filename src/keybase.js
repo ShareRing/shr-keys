@@ -1,5 +1,4 @@
-const bip39 = require('react-native-bip39')
-//const bip39 = require('bip39')
+const bip39 = require('./platform').bip39;
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1");
 
@@ -83,8 +82,8 @@ class KeyPair {
 
 /**
  * createMnemonic - create a list of 12 words as mnemonic as a base for privateKey generation
- * @param {string} language - one type of language. Currently only support English. See Enum Language defined in this file
- * @param {string} algorithm - which algorithm to be used. See enum Algorithm defined in this file.
+ * @param {string} language, optional - one type of language. Currently only support English. See Enum Language defined in this file
+ * @param {string} algorithm, optional - which algorithm to be used. See enum Algorithm defined in this file.
  * @return {string} mnemonic - a list of 12 words
  */
 KeyPair.createMnemonic = function (language, algorithm) {
@@ -97,6 +96,17 @@ KeyPair.createMnemonic = function (language, algorithm) {
     let mnemonic = bip39.entropyToMnemonic(randomBytes.toString('hex').slice(2)) //  12 word phrase
 
     return mnemonic
+}
+
+
+/**
+ * validateMnemonic - validate whether a strin is a correct mnemonic
+ * @param {string} mnemonic
+ * @param {string} language - optional. Default is English
+ * @return {boolean} true/false indicating whether the string is a correct mnemonic
+ */
+KeyPair.validateMnemonic = function(mnemonic, languange){
+    return bip39.validateMnemonic(mnemonic, language)
 }
 
 
