@@ -14,8 +14,8 @@ else if (typeof navigator != 'undefined' && navigator.product == 'ReactNative') 
 }
 else {
   // I'm in node js
-     console.log('NODEJS');
-   bip39 = require('bip39');
+    console.log('NODEJS');
+    bip39 = require('bip39');
 }
 
 
