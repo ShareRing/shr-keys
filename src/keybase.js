@@ -112,8 +112,10 @@ KeyPair.createMnemonic = function (language, algorithm) {
  * @param {string} language - optional. Default is English
  * @return {boolean} true/false indicating whether the string is a correct mnemonic
  */
-KeyPair.validateMnemonic = function(mnemonic, languange){
-    return bip39.validateMnemonic(mnemonic, language)
+KeyPair.validateMnemonic = function(mnemonic, language){
+    language = language || Language.English;
+    if (language != Language.English) throw Error("Only Support English now")
+    return bip39.validateMnemonic(mnemonic)
 }
 
 
