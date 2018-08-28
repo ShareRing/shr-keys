@@ -1,0 +1,27 @@
+{
+  "name": "shr-keys",
+  "version": "0.0.1",
+  "description": "Keys and Address generation and manipulation",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base-x": "^3.0.4",
+    "bip39": "^2.5.0",
+    "buffer": "^5.1.0",
+    "crypto-js": "^3.1.9-1",
+    "elliptic": "^6.4.0",
+    "eth-lib": "^0.2.8",
+    "js-sha3": "^0.7.0",
+    "level": "^4.0.0",
+    "leveldown": "^4.0.1",
+    "levelup": "^3.1.1",
+    "pbkdf2": "^3.0.16",
+    "pemtools": "^0.4.7",
+    "stream": "^0.0.2"
+  },
+  "devDependencies": {}
+}
