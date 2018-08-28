@@ -40,6 +40,9 @@ class KeyPair {
      * @return {string} hex representation of DER signature
      */
     sign(msg) {
+        if (this.privKey == null) {
+            return false
+        }
         return Encrypt.sign(this.privKey, msg);
     }
 
@@ -50,9 +53,13 @@ class KeyPair {
      * @return {boolean} true/false
      */
     verify(msg, signature) {
-        console.log("PubKey", this.pubKey)
         return Encrypt.verify(this.pubKey, msg, signature)
     }
+
+
+    /**
+     * encrypt - encrypt a message
+     */
     
     /**
      * stringify - turn this object into a JSON string
@@ -72,7 +79,7 @@ class KeyPair {
      * encrypted - get encrypted version of this keyPair
      * @param {string} secretKey - hex representation of secretKey used to encrypt this keyPair
      */
-    encrypted(secretKey){
+    encryptedString(secretKey){
         let obj = [this.privKey, this.pubKey, this.address]
         return Symmetric.encrypt(JSON.stringify(obj), secretKey)
     }
@@ -145,6 +152,15 @@ KeyPair.fromEncryptedKeyPair = function (encryptedKP, secretKey) {
     let obj =  JSON.parse(Symmetric.decrypt(encryptedKP, secretKey))
     return new KeyPair(obj[0], obj[1], obj[2])
 
+}
+
+
+/**
+ * fromPublicKey - get KeyPair from public key. 
+ * NOTE: KeyPair is without PrivateKey, only suitable for verify/decrypt
+ */
+KeyPair.fromPublicKey = function (publicKey){
+    return new KeyPair(null, publicKey, Address.addressFromPublic(publicKey))
 }
 
 

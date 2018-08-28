@@ -59,7 +59,7 @@ const fromPrivate = privateKey => {
 
 
 
-module.exports = { create, toChecksum, fromPrivate };
+module.exports = { create, toChecksum, fromPrivate, addressFromPublic};
 
 
 if (require.main == module){
