@@ -50,7 +50,7 @@ module.exports = {
     decrypt: function (ciphertext, secretKey) {
         if(ciphertext && secretKey)
         {
-            return Encrypt.decrypt(ciphertext, secretKey)
+            return Symmetric.decrypt(ciphertext, secretKey)
         }else {
             return '';
         }
