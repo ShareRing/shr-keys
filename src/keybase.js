@@ -259,7 +259,7 @@ if (require.main === module) {
     console.log("SecretKey:", secretKey)
     
     // Encrypt KeyPair into a ciphertext
-    let encryptedKP = kp.encrypted(secretKey)
+    let encryptedKP = kp.encryptedString(secretKey)
     console.log("Encrypt:", encryptedKP)
     
     // Decrypt the ciphertext into KeyPair
@@ -275,4 +275,14 @@ if (require.main === module) {
     // Using KeyPair to verify a message
     console.log("Verified?:", kp.verify(msg, signature))
 
+
+    let keyPair1 = secp256k1.genKeyPair()
+    let keyPair2 = secp256k1.genKeyPair()
+
+    let shared = keyPair1.derive(keyPair2.getPublic())
+    let shared1 = keyPair2.derive(keyPair1.getPublic())
+    console.log(shared.toString(16))
+    console.log(shared1.toString(16))
+    console.log(keyPair1.getPublic())
+    console.log(secp256k1.keyFromPrivate(keyPair1.getPrivate()))
 }
