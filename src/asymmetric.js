@@ -3,6 +3,8 @@ const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const CryptoJS = require('crypto-js');
 
 const utils = require('./utils');
+const Bytes = require('./bytes.js');
+const Address = require('./address.js');
 
 
 
@@ -33,6 +35,26 @@ const verify = (publicKey, data, sig) => {
 	return secp256k1.verify(mesHash, sig, pubKeyBytes)
 }
 
+
+
+/*
+ * encrypt - encrypt using ECIES
+ * @param {string} publicKey - hex string of publicKey used to encrypt
+ * @param {string} data - message to be encrypted
+ * @param {string} opts - 
+ * * opts.iv {string} - random bytes
+ * * opts.ephemPrivKey {string} - hexString of ephemeral privateKey
+ * @return {string} JSON of the object including
+ * * iv {string} - hex String of random bytes
+ * * ciphertext {string} - hex string of ciphertext
+ * * mac {string} - message authenticity
+ */
+const encrypt = function (publicKey, data, opts) {
+    opts = opts || {}
+    let ephemPrivKey = opts.ephemPrivKey || Bytes.random(32)
+    let ephemPubKey = Address.fromPrivate(ephemPrivKey).publicKey
+    //let sharedKey = 
+}
 
 module.exports = {
     sign,
