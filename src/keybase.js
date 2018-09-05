@@ -6,6 +6,7 @@ const Address = require('./address.js');
 const Encrypt = require('./asymmetric.js');
 const Bytes = require("./bytes.js")
 const Symmetric = require('./symmetric.js');
+const Utils = require('./utils');
 
 
 
@@ -107,7 +108,7 @@ KeyPair.createMnemonic = function (language, algorithm) {
 
 
 /**
- * validateMnemonic - validate whether a strin is a correct mnemonic
+ * validateMnemonic - validate whether a string is a correct mnemonic
  * @param {string} mnemonic
  * @param {string} language - optional. Default is English
  * @return {boolean} true/false indicating whether the string is a correct mnemonic
@@ -281,8 +282,11 @@ if (require.main === module) {
 
     let shared = keyPair1.derive(keyPair2.getPublic())
     let shared1 = keyPair2.derive(keyPair1.getPublic())
-    console.log(shared.toString(16))
-    console.log(shared1.toString(16))
-    console.log(keyPair1.getPublic())
-    console.log(secp256k1.keyFromPrivate(keyPair1.getPrivate()))
+    console.log("Shared:", shared.toString(16))
+    console.log("Shared1:", shared1.toString(16))
+    console.log("PubKey:", keyPair1.getPublic())
+    //console.log("KeyPair:", secp256k1.keyFromPrivate(keyPair1.getPrivate()))
+
+    console.log("KeyPair from Private:", secp256k1.keyFromPrivate(kp.privKey).getPublic())
+    console.log("KeyPair from Public:", secp256k1.keyFromPublic(Utils.hexToBytes(kp.pubKey), null).getPublic())
 }
