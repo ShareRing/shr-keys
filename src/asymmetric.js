@@ -142,7 +142,9 @@ const decrypt = function (privateKey, ciphertext) {
 
 module.exports = {
     sign,
-	verify
+	verify,
+    encrypt,
+    decrypt,
 }
 
 if (require.main == module){
