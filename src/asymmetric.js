@@ -1,7 +1,6 @@
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const CryptoJS = require('crypto-js');
-const fs = require('fs')
 
 const Utils = require('./utils');
 const Bytes = require('./bytes.js');
@@ -144,7 +143,7 @@ module.exports = {
     sign,
 	verify,
     encrypt,
-    decrypt,
+    decrypt
 }
 
 if (require.main == module){
@@ -180,6 +179,7 @@ if (require.main == module){
 	console.log("Verify", secp256k1.verify(mesHash, signature, pkBytes))
     
     console.log("PubKey:", res.publicKey)
+
     let ciphertext = encrypt(res.publicKey, "abcc")
     console.log(ciphertext)
     
@@ -199,10 +199,13 @@ if (require.main == module){
     }
 
     let base64 = require("base-64")
+    let fs = require('fs')
 
     let content = fs.readFileSync('./README.md')
     let bs = bytesToByteString(content)
     let b64 = base64.encode(bs)
+
+    
     console.log("Original length:", bs.length, "Base64 length:", b64.length)
 
     ciphertext = encrypt(res.publicKey, b64);
