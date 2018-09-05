@@ -10,9 +10,8 @@ KEY_LENGTH = 256; // 128/32 or 256/32 or 512/32
  * @param {string} secretKey - key used to encrypt plaintext
  * @return {string} hex encoded ciphertext
  */
-const encrypt = (plaintext, secretKey) => {
-
-    let encryptedText = CryptoJS.AES.encrypt(plaintext, secretKey, {mode: CryptoJS.mode.CTR} )
+const encrypt = (plaintext, secretKey, iv) => {
+    let encryptedText = CryptoJS.AES.encrypt(plaintext, secretKey, {mode: CryptoJS.mode.CTR, iv: iv} )
 
     return encryptedText.toString();
 }
@@ -24,8 +23,8 @@ const encrypt = (plaintext, secretKey) => {
  * @param {string} secretKey - key used to decrypt ciphertext
  * @return {string} plaintext
  */
-const decrypt = (ciphertext, secretKey) => {
-    let decryptedBytes = CryptoJS.AES.decrypt(ciphertext, secretKey, {mode: CryptoJS.mode.CTR} );
+const decrypt = (ciphertext, secretKey, iv) => {
+    let decryptedBytes = CryptoJS.AES.decrypt(ciphertext, secretKey, {mode: CryptoJS.mode.CTR, iv: iv} );
 
     let decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
 

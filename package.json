@@ -23,5 +23,7 @@
     "pemtools": "^0.4.7",
     "stream": "^0.0.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "base-64": "^0.1.0"
+  }
 }
