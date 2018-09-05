@@ -197,22 +197,24 @@ if (require.main == module){
         return res
     
     }
+    
+    // test length of ciphertext in comparison with plaintext
+    // fs cause asyncstorage-down error
+    //let base64 = require("base-64")
+    //let fs = require('fs')
 
-    let base64 = require("base-64")
-    let fs = require('fs')
-
-    let content = fs.readFileSync('./README.md')
-    let bs = bytesToByteString(content)
-    let b64 = base64.encode(bs)
+    //let content = fs.readFileSync('./README.md')
+    //let bs = bytesToByteString(content)
+    //let b64 = base64.encode(bs)
 
     
-    console.log("Original length:", bs.length, "Base64 length:", b64.length)
+    //console.log("Original length:", bs.length, "Base64 length:", b64.length)
 
-    ciphertext = encrypt(res.publicKey, b64);
-    console.log("Ciphertext length:", ciphertext.length)
+    //ciphertext = encrypt(res.publicKey, b64);
+    //console.log("Ciphertext length:", ciphertext.length)
 
-    plaintext = decrypt(res.privateKey, ciphertext)
-    console.log(base64.decode(plaintext).length)
+    //plaintext = decrypt(res.privateKey, ciphertext)
+    //console.log(base64.decode(plaintext).length)
 
 }
 
