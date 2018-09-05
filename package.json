@@ -24,7 +24,5 @@
     "react-native-bip39": "^2.3.0",
     "stream": "^0.0.2"
   },
-  "devDependencies": {
-    "base-64": "^0.1.0"
-  }
+  "devDependencies": {}
 }
