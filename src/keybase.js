@@ -59,10 +59,6 @@ class KeyPair {
 
 
     /**
-     * encrypt - encrypt a message
-     */
-    
-    /**
      * stringify - turn this object into a JSON string
      */
     stringify() {
@@ -77,12 +73,35 @@ class KeyPair {
 
 
     /**
-     * encrypted - get encrypted version of this keyPair
+     * encryptedString - get encrypted version of this keyPair
      * @param {string} secretKey - hex representation of secretKey used to encrypt this keyPair
      */
     encryptedString(secretKey){
         let obj = [this.privKey, this.pubKey, this.address]
         return Symmetric.encrypt(JSON.stringify(obj), secretKey)
+    }
+
+
+    /*
+     * encrypt - encrypt a plaintext of string
+     * @param {string} plaintext - a plaintext in string
+     * @return {string} JSON string of the object including
+     * * iv {string} - hex String of Initialization Vector - random 16 bytes = 32 chars
+     * * ephemPubKey {string} - hex String of ephemeral public Key - 65 bytes  = 130 chars
+     * * ciphertext {string} - hex string of ciphertext (Variable size)
+     * * mac {string} - message authentication code ( 32 bytes = 64 chars )
+     */
+    encrypt( plaintext ) {
+        return Encrypt.encrypt(this.pubKey, plaintext)
+    }
+    
+    /*
+     * decrypt - decrypt ciphertext
+     * @param {string} ciphertext - received from above function
+     * @return {string} plaintext
+     */
+    decrypt ( ciphertext) {
+        return Encrypt.decrypt(this.privKey, ciphertext)
     }
 
 
@@ -160,7 +179,7 @@ KeyPair.fromEncryptedKeyPair = function (encryptedKP, secretKey) {
 
 /**
  * fromPublicKey - get KeyPair from public key. 
- * NOTE: KeyPair is without PrivateKey, only suitable for verify/decrypt
+ * NOTE: KeyPair is without PrivateKey, only suitable for verifying a signature or encrypting a message
  */
 KeyPair.fromPublicKey = function (publicKey){
     return new KeyPair(null, publicKey, Address.addressFromPublic(publicKey))
@@ -213,37 +232,11 @@ module.exports = {
 }
 
 if (require.main === module) {
-    //let levelup = require('levelup')
-    //let leveldown = require('leveldown')
-    //let db = levelup(leveldown('./mydb'))   
-
-    //let keyInfo = new KeyInfo("Tan","ShareRingiscaring")
-    //let signature = keyInfo.sign("Toilatan")
-    //let verifiedResult = keyInfo.verify("Toilatan",signature)
-    //if( verifiedResult ) {
-        //console.log("signature is verified")
-    //}
-    //else console.log("signature is not verfied")
-
-    //let kb = new KeyBase(db)
     
-   /*  console.log(keyInfo.stringify())
-    let kb = new KeyBase(db);
-    kb.save("Tan", keyInfo).then((val) => {
-            return kb.get("Tan")
-        }).then((val) => {
-                console.log("============")
-                console.log(JSON.par se(val))
-    }) */
-
     // Generate a mnemonic
     let mne = KeyPair.createMnemonic()
     console.log(mne)
     
-    // Generate KeyPair from Mnemonic
-    // KeyPair = {"address": xxxx,
-    //             "privKey": xxxx,
-    //             "pubKey": xxxx}
     let kp = KeyPair.fromMnemonic(mne)
     console.log(kp)
     
@@ -289,4 +282,23 @@ if (require.main === module) {
 
     console.log("KeyPair from Private:", secp256k1.keyFromPrivate(kp.privKey).getPublic())
     console.log("KeyPair from Public:", secp256k1.keyFromPublic(Utils.hexToBytes(kp.pubKey), null).getPublic())
+
+
+
+
+    // How to Use KeyPair to encrypt/decrypt KYC
+    //
+    // Encrypt KYC
+    let userKP = KeyPair.fromPublicKey(kp.pubKey) // using PublicKey of receiver
+    let kyc = "this is kyc data"
+    let ciphertext = userKP.encrypt(kyc) // encrypt KYC data
+
+
+    // Decrypt KYC on receiving side
+    let recipientKP = KeyPair.fromPrivateKey(kp.privKey) // using PrivateKey of receiver
+    let receivedKyc = recipientKP.decrypt(ciphertext) // decrypt KYC data
+
+    if ( kyc != receivedKyc ) {
+        console.log("Mismatch: ", kyc, receivedKyc)
+    }
 }

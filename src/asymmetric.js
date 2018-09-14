@@ -99,24 +99,14 @@ const encrypt = function (publicKey, data, opts) {
 /*
  * decrypt - decrypt using ECIES
  * @param {string} privateKey - hex string of privateKey used to encrypt ( 32 bytes = 64 chars )
- *
  * @param {string} ciphertext - message to be decrypted
- *
- * @param {string} opts -
- * * opts.iv {string} - Initialization Vector IV 16 bytes random Bytes
- * * opts.ephemPubKey {string} - hexString of ephemeral privateKey
- *
- * @return {string} JSON of the object including
- * * iv {string} - hex String of Initialization Vector - random 16 bytes = 32 chars
- * * ephemPubKey {string} - hex String of ephemeral public Key - 65 bytes  = 130 chars
- * * ciphertext {string} - hex string of ciphertext (Variable size)
- * * mac {string} - message authentication code ( 32 bytes = 64 chars )
- *
+ * @return {string} plaintext
  */
 const decrypt = function (privateKey, ciphertext) {
     ciphertext = JSON.parse(ciphertext)
 
     let keyPair = secp256k1.keyFromPrivate(privateKey)
+
     let ephemKeyPair = secp256k1.keyFromPublic(Utils.hexToBytes(ciphertext.ephemPubKey))
 
     let sharedSecret = keyPair.derive(ephemKeyPair.getPublic())
