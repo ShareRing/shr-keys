@@ -31,7 +31,7 @@ class KeyPair {
     constructor(privKey, pubKey, address) {
         this.privKey = privKey
         this.pubKey = pubKey
-        this.address = address
+        this.address = address.toUpperCase()
     }
     
     

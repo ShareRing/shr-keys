@@ -46,7 +46,7 @@ const fromPrivate = privateKey => {
 
   // Public Key without "0x"
   const publicKey = ecKey.getPublic(false, 'hex');
-  let address = addressFromPublic(publicKey)
+  let address = addressFromPublic(publicKey).toUpperCase()
 
 
   return {
