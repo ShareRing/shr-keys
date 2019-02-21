@@ -26,10 +26,7 @@ const toChecksum = address => {
       ? address[i].toUpperCase()
       : address[i];
 
-  let uppercase = checksumAddress.toUpperCase()
-  let words = Bech32.toWords(Buffer.from(uppercase))
-  let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixAccAddr, words)
-  return bech32Address;
+    return checksumAddress;
 }
 
 
@@ -41,7 +38,10 @@ const addressFromPublic = publicKey => {
 
   // Hashing including "0x"
   const address = toChecksum(publicHash.slice(-40));
-  return address
+  console.log("xx,", address)
+  let words = Bech32.toWords(Buffer.from(address))
+  let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixAccAddr, words)
+  return bech32Address
 }
 
 const fromPrivate = privateKey => {
