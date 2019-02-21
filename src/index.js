@@ -99,4 +99,6 @@ module.exports = {
     asymmetricEncrypt: Asymmetric.encrypt, // asymmetric encrypt
     asymmetricDecrypt: Asymmetric.decrypt, // asymmetric decrypt
     KeyPair: KeyPair.KeyPair, // KeyPair
+    addressToBech32: Address.addressToBech32,
+    bech32ToAddress: Address.bech32ToAddress,
 }

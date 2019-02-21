@@ -8,6 +8,22 @@ const utils = require("./utils");
 const Bech32Prefix = require("./bech32prefix");
 
 
+
+/**************** BECH32 **********************/
+const addressToBech32 = address => {
+  let words = Bech32.toWords(utils.hexToBytes(address))
+  let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixAccAddr, words)
+  return bech32Address
+}
+
+const bech32ToAddress = bech32Address => {
+  let words = Bech32.decode(bech32Address).words
+  return utils.bytesToHex(Bech32.fromWords(words)).toUpperCase()
+}
+
+/**************** ADDRESS **********************/
+
+
 const create = mnemonic => {
   const mnemonicHash = keccak256(mnemonic)
   return fromPrivate(mnemonicHash)
@@ -38,19 +54,9 @@ const addressFromPublic = publicKey => {
 
   // Hashing including "0x"
   const address = toChecksum(publicHash.slice(-40));
-  return address
+  return addressToBech32(address)
 }
 
-const addressToBech32 = address => {
-  let words = Bech32.toWords(utils.hexToBytes(address))
-  let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixAccAddr, words)
-  return bech32Address
-}
-
-const bech32ToAddress = bech32Address => {
-  let words = Bech32.decode(bech32Address).words
-  return utils.bytesToHex(Bech32.fromWords(words))
-}
 
 const fromPrivate = privateKey => {
   privateKey = utils.cleanHex(privateKey)
@@ -84,7 +90,7 @@ if (require.main == module){
     console.log("Custom Mnemonic:", "trang tran")
     console.log("Address:", create("trang tran"))
     let kp = create("trang tran")
-    let ba = addressToBech32(kp.address)
-    console.log("Bech32:", ba)
-    console.log("Bech32 to Address", bech32ToAddress(ba))
+    let rawAddress = bech32ToAddress(kp.address)
+    console.log("rawAddress", rawAddress)
+    console.log("bech32Address", addressToBech32(rawAddress))
 }
