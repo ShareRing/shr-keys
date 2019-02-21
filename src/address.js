@@ -9,8 +9,8 @@ const Bech32Prefix = require("./bech32prefix");
 
 
 const create = mnemonic => {
-    const mnemonicHash = keccak256(mnemonic)
-    return fromPrivate(mnemonicHash)
+  const mnemonicHash = keccak256(mnemonic)
+  return fromPrivate(mnemonicHash)
 }
 
 const toChecksum = address => {
@@ -52,7 +52,7 @@ const fromPrivate = privateKey => {
 
   // Public Key without "0x"
   const publicKey = ecKey.getPublic(false, 'hex');
-  let address = addressFromPublic(publicKey).toUpperCase()
+  let address = addressFromPublic(publicKey)
 
 
   return {
