@@ -34,13 +34,6 @@ class KeyPair {
         this.address = address
     }
 
-    /**
-     * bech32Address - get 32bech address
-     * @return {string} bech32 representation
-     */    
-    bech32Address() {
-
-    }
 
     /**
      * sign - sign a message using this key
