@@ -1,9 +1,11 @@
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
+const Bech32 = require('bech32')
 
 const {keccak256, keccak256s} = require("./hash");
 const Bytes = require("./bytes");
 const utils = require("./utils");
+const Bech32Prefixes = require("./bech32prefix");
 
 
 const create = mnemonic => {
@@ -23,7 +25,11 @@ const toChecksum = address => {
     checksumAddress += parseInt(addressHash[i], 16) > 7
       ? address[i].toUpperCase()
       : address[i];
-  return checksumAddress;
+
+  let uppercase = checksumAddress.toUpperCase()
+  let words = Bech32.toWords(Buffer.from(uppercase))
+  let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixAccAddr, words)
+  return bech32Address;
 }
 
 
@@ -52,7 +58,7 @@ const fromPrivate = privateKey => {
   return {
     address: address,
     privateKey: privateKey,
-	publicKey: publicKey,
+    publicKey: publicKey,
   }
 }
 
