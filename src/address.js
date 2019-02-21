@@ -5,7 +5,7 @@ const Bech32 = require('bech32')
 const {keccak256, keccak256s} = require("./hash");
 const Bytes = require("./bytes");
 const utils = require("./utils");
-const Bech32Prefixes = require("./bech32prefix");
+const Bech32Prefix = require("./bech32prefix");
 
 
 const create = mnemonic => {
