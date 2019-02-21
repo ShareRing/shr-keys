@@ -38,10 +38,18 @@ const addressFromPublic = publicKey => {
 
   // Hashing including "0x"
   const address = toChecksum(publicHash.slice(-40));
-  console.log("xx,", address)
-  let words = Bech32.toWords(Buffer.from(address))
+  return address
+}
+
+const addressToBech32 = address => {
+  let words = Bech32.toWords(utils.hexToBytes(address))
   let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixAccAddr, words)
   return bech32Address
+}
+
+const bech32ToAddress = bech32Address => {
+  let words = Bech32.decode(bech32Address).words
+  return utils.bytesToHex(Bech32.fromWords(words))
 }
 
 const fromPrivate = privateKey => {
@@ -65,7 +73,7 @@ const fromPrivate = privateKey => {
 
 
 
-module.exports = { create, toChecksum, fromPrivate, addressFromPublic};
+module.exports = { create, toChecksum, fromPrivate, addressFromPublic, addressToBech32, bech32ToAddress};
 
 
 if (require.main == module){
@@ -75,4 +83,8 @@ if (require.main == module){
     console.log("Address:", create(mnemonic))
     console.log("Custom Mnemonic:", "trang tran")
     console.log("Address:", create("trang tran"))
+    let kp = create("trang tran")
+    let ba = addressToBech32(kp.address)
+    console.log("Bech32:", ba)
+    console.log("Bech32 to Address", bech32ToAddress(ba))
 }
