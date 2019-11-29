@@ -98,6 +98,8 @@ module.exports = {
     verify: Asymmetric.verify, // verify a transaction
     asymmetricEncrypt: Asymmetric.encrypt, // asymmetric encrypt
     asymmetricDecrypt: Asymmetric.decrypt, // asymmetric decrypt
+    eccEncrypt: Asymmetric.eccEncrypt,
+    eccDecrypt: Asymmetric.eccDecrypt,
     KeyPair: KeyPair.KeyPair, // KeyPair
     addressToBech32: Address.addressToBech32,
     bech32ToAddress: Address.bech32ToAddress,
