@@ -37,8 +37,33 @@ function cleanHex(str) {
         return str
 }
 
+function objToHex (encrypted) {
+  let dataToSend = ''
+  Object.keys(encrypted).forEach(key => {
+    let data = encrypted[key].toString('hex')
+    dataToSend += (key + '.' + data + '.')
+  })
+  dataToSend = dataToSend.substring(0, dataToSend.length -1)
+  return dataToSend
+}
+
+function hexToObj (hexString) {
+  let dataReceived = hexString.split('.')
+  let obj = {}
+  let l = dataReceived.length / 2
+  for (let i = 0; i < l; i++ ) {
+    Object.assign(obj, {[dataReceived[2 * i]]: dataReceived[2 * i+1]})
+  }
+  Object.keys(obj).forEach(key => {
+    obj[key] = Buffer.from(obj[key], 'hex')
+  })
+  return obj  
+}
+
 module.exports = {
     hexToBytes,
     bytesToHex,
     cleanHex,
+    objToHex,
+    hexToObj
 }
