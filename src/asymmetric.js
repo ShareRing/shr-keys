@@ -24,6 +24,17 @@ const sign = (privateKey, data) => {
 }
 
 /*
+ *generate signature in tendermint format 
+*/
+const signTm = (privateKey, data) => {
+    privateKey = Utils.cleanHex(privateKey)
+    let mesHash = CryptoJS.SHA256(data).toString()
+    let privKeyBytes = Utils.hexToBytes(privateKey)
+    let signature = secp256k1.sign(mesHash, privKeyBytes, {canonical: true})
+    const s = signature.r.toArray().concat(signature.s.toArray())
+    return Utils.bytesToHex(s)
+}
+/*
  * verify - signed data using public key
  * @param {string} publicKey - hex string
  * @param {string} data - message to be verified
@@ -131,6 +142,7 @@ const decrypt = function (privateKey, ciphertext) {
 
 module.exports = {
     sign,
+    signTm,
 	verify,
     encrypt,
     decrypt
