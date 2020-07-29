@@ -1,7 +1,7 @@
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const Bech32 = require('bech32')
-
+const crypto = require('crypto')
 const {keccak256, keccak256s} = require("./hash");
 const Bytes = require("./bytes");
 const utils = require("./utils");
@@ -47,14 +47,11 @@ const toChecksum = address => {
 
 
 const addressFromPublic = publicKey => {
-  publicKey = utils.cleanHex(publicKey)
-
-  // Hash of byte array of public key
-  const publicHash = keccak256(utils.hexToBytes(publicKey));
-
-  // Hashing including "0x"
-  const address = toChecksum(publicHash.slice(-40));
-  return addressToBech32(address)
+  let buf = Buffer.from(publicKey, 'hex')
+  let hash = crypto.createHash('sha256').update(buf).digest('hex')
+  buf = Buffer.from(hash, 'hex')
+  hash = crypto.createHash('ripemd160').update(buf).digest('hex')
+  return addressToBech32(hash)
 }
 
 
