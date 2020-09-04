@@ -31,8 +31,24 @@ const signTm = (privateKey, data) => {
     let mesHash = CryptoJS.SHA256(data).toString()
     let privKeyBytes = Utils.hexToBytes(privateKey)
     let signature = secp256k1.sign(mesHash, privKeyBytes, {canonical: true})
-    const s = signature.r.toArray().concat(signature.s.toArray())
-    return Utils.bytesToHex(s)
+    let r = signature.r.toArray()
+    let s = signature.s.toArray()
+    let p = 32 - r.length
+    r = addPadding(p, r)
+    p = 32 - s.length
+    s = addPadding(p, s)
+    return Utils.bytesToHex([...r, ...s])
+}
+
+const addPadding = (padLength, data) => {
+    if (padLength > 0) {
+        let pad = []
+        for (let i = 0; i < padLength; i++) {
+            pad = [0, ...pad]
+        }
+        data = [...pad, ...data]
+    }
+    return data
 }
 /*
  * verify - signed data using public key
