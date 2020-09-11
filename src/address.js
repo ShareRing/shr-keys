@@ -63,7 +63,7 @@ const fromPrivate = privateKey => {
   const ecKey = secp256k1.keyFromPrivate(privateKey);
 
   // Public Key without "0x"
-  const publicKey = ecKey.getPublic(false, 'hex');
+  const publicKey = ecKey.getPublic(true, 'hex');
   let address = addressFromPublic(publicKey)
 
 
