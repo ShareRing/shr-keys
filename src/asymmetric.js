@@ -23,6 +23,32 @@ const sign = (privateKey, data) => {
   return Utils.bytesToHex(signature.toDER())
 }
 
+const signTm = (privateKey, data) => {
+  privateKey = Utils.cleanHex(privateKey)
+  let mesHash = CryptoJS.SHA256(data).toString()
+  let privKeyBytes = Utils.hexToBytes(privateKey)
+  let signature = secp256k1.sign(mesHash, privKeyBytes, {canonical: true})
+  let r = signature.r.toArray()
+  let s = signature.s.toArray()
+  let p = 32 - r.length
+  r = addPadding(p, r)
+  p = 32 - s.length
+  s = addPadding(p, s)
+  return Utils.bytesToHex([...r, ...s])
+}
+
+const addPadding = (padLength, data) => {
+  if (padLength > 0) {
+      let pad = []
+      for (let i = 0; i < padLength; i++) {
+          pad = [0, ...pad]
+      }
+      data = [...pad, ...data]
+  }
+  return data
+}
+
+
 /*
  * verify - signed data using public key
  * @param {string} publicKey - hex string
@@ -168,6 +194,7 @@ const eccDecrypt = async (privKey, cipherText) => {
 
 module.exports = {
   sign,
+  signTm,
   verify,
   encrypt,
   decrypt,

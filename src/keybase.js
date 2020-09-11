@@ -47,6 +47,13 @@ class KeyPair {
         return Encrypt.sign(this.privKey, msg);
     }
 
+    signTm(msg) {
+        if (this.privKey == null) {
+            return false
+        }
+        return Encrypt.signTm(this.privKey, msg);
+    }
+
     /**
      * verify - verify a message using this key
      * @param {string} msg - message to be verified

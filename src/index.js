@@ -95,6 +95,7 @@ module.exports = {
      * Sign a transaction
      */
     sign: Asymmetric.sign, // sign a transasction
+    signTm: Asymmetric.signTm,
     verify: Asymmetric.verify, // verify a transaction
     asymmetricEncrypt: Asymmetric.encrypt, // asymmetric encrypt
     asymmetricDecrypt: Asymmetric.decrypt, // asymmetric decrypt
