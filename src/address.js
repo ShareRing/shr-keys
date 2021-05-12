@@ -21,6 +21,15 @@ const bech32ToAddress = bech32Address => {
   return utils.bytesToHex(Bech32.fromWords(words)).toUpperCase()
 }
 
+const addressToValidatorBech32 = address => {
+  let words = Bech32.toWords(utils.hexToBytes(address))
+  let bech32Address = Bech32.encode(Bech32Prefix.Bech32PrefixValAddr, words)
+  return bech32Address
+}
+const bech32ValidatorToAddress = bech32Address => {
+  let words = Bech32.decode(bech32Address).words
+  return utils.bytesToHex(Bech32.fromWords(words)).toUpperCase()
+}
 /**************** ADDRESS **********************/
 
 
@@ -76,7 +85,16 @@ const fromPrivate = privateKey => {
 
 
 
-module.exports = { create, toChecksum, fromPrivate, addressFromPublic, addressToBech32, bech32ToAddress};
+module.exports = { 
+  create,
+  toChecksum,
+  fromPrivate,
+  addressFromPublic,
+  addressToBech32,
+  bech32ToAddress,
+  addressToValidatorBech32,
+  bech32ValidatorToAddress
+};
 
 
 if (require.main == module){
