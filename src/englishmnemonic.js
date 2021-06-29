@@ -1,7 +1,7 @@
 const bip39 = require('./platform').bip39;
 
 class EnglishMnemonic {
-  static wordlist = bip39.wordlists.english;
+  static wordlist = bip39.wordlists.EN;
   static mnemonicMatcher = /^[a-z]+( [a-z]+)*$/;
 
   constructor(mnemonic) {
