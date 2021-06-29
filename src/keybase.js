@@ -7,7 +7,8 @@ const Encrypt = require('./asymmetric.js');
 const Bytes = require("./bytes.js")
 const Symmetric = require('./symmetric.js');
 const Utils = require('./utils');
-
+const bip32 = require('bip32');
+const EnglishMnemonic = require('./englishmnemonic');
 
 
 
@@ -193,6 +194,18 @@ KeyPair.fromEncryptedKeyPair = function (encryptedKP, secretKey) {
  */
 KeyPair.fromPublicKey = function (publicKey){
     return new KeyPair(null, publicKey, Address.addressFromPublic(publicKey))
+}
+
+KeyPair.fromMnemonicUpdated = function(mnemonic) {
+  const mnemonicChecked = new EnglishMnemonic(mnemonic);
+  const seed = bip39.mnemonicToSeed(mnemonicChecked.toString(), "");
+  const node = bip32.fromSeed(seed);
+  const child = node.derivePath(`m/44'/118'/0'/0/0`);
+  if (!child.privateKey) {
+    throw new Error("Invalid HdPath");
+  }
+  const res = Address.fromPrivate(child.privateKey.toString("hex"));
+  return new KeyPair(res.privateKey, res.publicKey, res.address);
 }
 
 
