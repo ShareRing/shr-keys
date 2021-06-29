@@ -1,3 +1,5 @@
+'use strict';
+
 // This was ported from https://github.com/emn178/js-sha3, with some minor
 // modifications and pruning. It is licensed under MIT:
 //

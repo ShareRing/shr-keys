@@ -1,3 +1,5 @@
+'use strict';
+
 const generate = (num, fn) => {
   let a = [];
   for (var i = 0; i < num; ++i)
@@ -19,7 +21,7 @@ const flatten = (a) => {
   return r;
 }
 
-const chunksOf = (n,a) => {
+const chunksOf = (n, a) => {
   let b = [];
   for (let i = 0, l = a.length; i < l; i += n)
     b.push(a.slice(i, i + n));

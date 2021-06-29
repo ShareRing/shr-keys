@@ -1,3 +1,5 @@
+'use strict';
+
 const Bech32PrefixAccAddr = "shareledger"
 // Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
 const Bech32PrefixAccPub = "shareledgerpub"
@@ -11,10 +13,10 @@ const Bech32PrefixConsAddr = "shareledgervalcons"
 const Bech32PrefixConsPub = "shareledgervalconspub"
 
 module.exports = {
-    Bech32PrefixAccAddr,
-    Bech32PrefixAccPub,
-    Bech32PrefixValAddr,
-    Bech32PrefixValPub,
-    Bech32PrefixConsAddr,
-    Bech32PrefixConsPub
+  Bech32PrefixAccAddr,
+  Bech32PrefixAccPub,
+  Bech32PrefixValAddr,
+  Bech32PrefixValPub,
+  Bech32PrefixConsAddr,
+  Bech32PrefixConsPub
 }

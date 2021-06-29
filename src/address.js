@@ -1,8 +1,10 @@
+'use strict';
+
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
-const Bech32 = require('bech32')
-const crypto = require('crypto')
-const {keccak256, keccak256s} = require("./hash");
+const Bech32 = require('bech32');
+const CryptoJS = require('crypto-js');
+const { keccak256, keccak256s } = require("./hash");
 const Bytes = require("./bytes");
 const utils = require("./utils");
 const Bech32Prefix = require("./bech32prefix");
@@ -46,20 +48,22 @@ const toChecksum = address => {
   let checksumAddress = "";
 
   //for (let i = 2; i < 42; i++)
-  for ( let i = 0; i < 40; i++ )
+  for (let i = 0; i < 40; i++)
     checksumAddress += parseInt(addressHash[i], 16) > 7
       ? address[i].toUpperCase()
       : address[i];
 
-    return checksumAddress;
+  return checksumAddress;
 }
 
 
 const addressFromPublic = publicKey => {
   let buf = Buffer.from(publicKey, 'hex')
-  let hash = crypto.createHash('sha256').update(buf).digest('hex')
+  //let hash = crypto.createHash('sha256').update(buf).digest('hex')
+  let hash = CryptoJS.SHA256(CryptoJS.enc.Base64.parse(buf.toString('base64'))).toString(CryptoJS.enc.Hex)
   buf = Buffer.from(hash, 'hex')
-  hash = crypto.createHash('ripemd160').update(buf).digest('hex')
+  //hash = crypto.createHash('ripemd160').update(buf).digest('hex')
+  hash = CryptoJS.RIPEMD160(CryptoJS.enc.Base64.parse(buf.toString('base64'))).toString(CryptoJS.enc.Hex)
   return addressToBech32(hash)
 }
 
@@ -82,10 +86,7 @@ const fromPrivate = privateKey => {
   }
 }
 
-
-
-
-module.exports = { 
+export {
   create,
   toChecksum,
   fromPrivate,
@@ -95,17 +96,3 @@ module.exports = {
   addressToValidatorBech32,
   bech32ValidatorToAddress
 };
-
-
-if (require.main == module){
-    let kb = require('./keybase')
-    let mnemonic = kb.KeyPair.createMnemonic(kb.Language.English, kb.Algorithm.SECP256K1)
-    console.log("Mnemonic:", mnemonic)
-    console.log("Address:", create(mnemonic))
-    console.log("Custom Mnemonic:", "trang tran")
-    console.log("Address:", create("trang tran"))
-    let kp = create("trang tran")
-    let rawAddress = bech32ToAddress(kp.address)
-    console.log("rawAddress", rawAddress)
-    console.log("bech32Address", addressToBech32(rawAddress))
-}

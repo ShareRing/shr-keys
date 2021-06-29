@@ -1,4 +1,4 @@
-
+'use strict';
 
 /*
  * Convert hex string to a byte array
@@ -6,9 +6,9 @@
  * @return {array} a byte array
  */
 function hexToBytes(hex) {
-    for (var bytes = [], c = 0; c < hex.length; c += 2)
+  for (var bytes = [], c = 0; c < hex.length; c += 2)
     bytes.push(parseInt(hex.substr(c, 2), 16));
-    return bytes;
+  return bytes;
 }
 
 
@@ -18,11 +18,11 @@ function hexToBytes(hex) {
  * @return {string} a hex string
  */
 function bytesToHex(bytes) {
-    for (var hex = [], i = 0; i < bytes.length; i++) {
-        hex.push((bytes[i] >>> 4).toString(16));
-        hex.push((bytes[i] & 0xF).toString(16));
-    }
-    return hex.join("");
+  for (var hex = [], i = 0; i < bytes.length; i++) {
+    hex.push((bytes[i] >>> 4).toString(16));
+    hex.push((bytes[i] & 0xF).toString(16));
+  }
+  return hex.join("");
 }
 
 /*
@@ -31,14 +31,14 @@ function bytesToHex(bytes) {
  * @return {string} a hex string without 0x
  */
 function cleanHex(str) {
-    if ( str.startsWith("0x") )
-        return str.slice(2)
-    else
-        return str
+  if (str.startsWith("0x"))
+    return str.slice(2)
+  else
+    return str
 }
 
 module.exports = {
-    hexToBytes,
-    bytesToHex,
-    cleanHex,
+  hexToBytes,
+  bytesToHex,
+  cleanHex,
 }

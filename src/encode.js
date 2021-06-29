@@ -1,3 +1,5 @@
+'use strict';
+
 var BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 const base58 = require('base-x')(BASE58)
 const hex = require('base-x')('0123456789abcdef')
@@ -6,15 +8,14 @@ const sha3_256 = require('js-sha3').sha3_256;
 const Buffer = require('buffer').Buffer;
 
 
-
 /**
  * calculate *checksum* of payload. 
  * Checksum = first 4 bytes of sha3_256
  * @param {array} payload - data to be checked
  * @return {Buffer} first 4 bytes of hash value of payload, using sha3_256
  */
-function checksum (payload) {
-  return new Buffer(sha3_256(Buffer.concat(payload)), 'hex').slice(0, 4)
+function checksum(payload) {
+  return Buffer.from(sha3_256(Buffer.concat(payload))).toString('hex').slice(0, 4);
 }
 
 
@@ -26,8 +27,8 @@ function checksum (payload) {
  * @param {string} address - hex value of Ethereum address, prefixed by '0x'
  * @return ShareLedger address
  */
-function encode ({network, address}) {
-  const payload = [hex.decode(network.slice(2)), new Buffer(address.slice(2), 'hex')]
+function encode({ network, address }) {
+  const payload = [hex.decode(network.slice(2)), Buffer.from(address.slice(2)).toString('hex')]
 
   payload.push(checksum(payload))
 
@@ -40,7 +41,7 @@ function encode ({network, address}) {
  * @param {string} encoded - base58 encoding of ShareLedger address
  * @return {object} {network, address}
  */
-function decode (encoded) {
+function decode(encoded) {
   const data = Buffer.from(base58.decode(encoded))
   const netLength = data.length - 24
 
@@ -59,31 +60,4 @@ function decode (encoded) {
   }
 }
 
-
-
-module.exports = { checksum, encode, decode};
-
-if (require.main === module) {
-    // using public key generated from ETH
-    const eth_address = require('./address');
-    res = eth_address.create("abc")
-    console.log("Generated Key:", res)
-    
-    // Encode public key into address
-    res1 = encode({network: "0x1", address: res.address})
-    console.log("Encoded Key:", res1)
-
-    // Decode text back to public key
-    res2 = decode(res1)
-    console.log("Decoded Key:", res2)
-
-
-    // check whether *encode* and *decode* function correctly
-    if ( res.address.toUpperCase() != res2.address.toUpperCase() ) {
-        console.log("Mismatch address", res.address, res2.address);
-    } else {
-        console.log("Correct address");
-    }
-
-}
-
+module.exports = { checksum, encode, decode };

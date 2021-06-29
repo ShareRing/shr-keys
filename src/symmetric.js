@@ -1,8 +1,10 @@
+'use strict';
+
 const elliptic = require("elliptic");
 const secp256k1 = new (elliptic.ec)("secp256k1"); // eslint-disable-line
 const CryptoJS = require('crypto-js');
 
-KEY_LENGTH = 256; // 128/32 or 256/32 or 512/32
+const KEY_LENGTH = 256; // 128/32 or 256/32 or 512/32
 
 /**
  * encrypt *plaintext* using *secretKey*, supposedly generated uisng *generateSecretKey* function
@@ -11,9 +13,9 @@ KEY_LENGTH = 256; // 128/32 or 256/32 or 512/32
  * @return {string} hex encoded ciphertext
  */
 const encrypt = (plaintext, secretKey, iv) => {
-    let encryptedText = CryptoJS.AES.encrypt(plaintext, secretKey, {mode: CryptoJS.mode.CTR, iv: iv} )
+  let encryptedText = CryptoJS.AES.encrypt(plaintext, secretKey, { mode: CryptoJS.mode.CTR, iv: iv })
 
-    return encryptedText.toString();
+  return encryptedText.toString();
 }
 
 
@@ -24,11 +26,11 @@ const encrypt = (plaintext, secretKey, iv) => {
  * @return {string} plaintext
  */
 const decrypt = (ciphertext, secretKey, iv) => {
-    let decryptedBytes = CryptoJS.AES.decrypt(ciphertext, secretKey, {mode: CryptoJS.mode.CTR, iv: iv} );
+  let decryptedBytes = CryptoJS.AES.decrypt(ciphertext, secretKey, { mode: CryptoJS.mode.CTR, iv: iv });
 
-    let decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
+  let decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
 
-    return decryptedText.toString();
+  return decryptedText.toString();
 }
 
 /**
@@ -38,31 +40,12 @@ const decrypt = (ciphertext, secretKey, iv) => {
  * @return {string} - hex presentation. Array length = KEY_LENGTH / 8
  */
 const generateSecretKey = (password, salt) => {
-    //return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
-    return CryptoJS.PBKDF2(password, salt,
-                           {
-                              keySize: KEY_LENGTH/32,
-                              iterations: 100
-                           }).toString()
+  //return pbkdf2.pbkdf2Sync(password, salt, 1, KEY_LENGTH/8, 'sha512')
+  return CryptoJS.PBKDF2(password, salt,
+    {
+      keySize: KEY_LENGTH / 32,
+      iterations: 100
+    }).toString()
 }
 
-
-
-
-module.exports = { encrypt, decrypt, generateSecretKey};
-
-
-if ( require.main == module ){
-    console.log("Generate key...");
-    key = generateSecretKey("ShareRingiscaring", "220NguyenDinhChieu");
-    console.log(key);
-    
-    plaintext = "ShareRing";
-
-    ciphertext = encrypt(plaintext, key.toString());
-    console.log("Encrypted data: ", ciphertext);
-
-
-    result = decrypt(ciphertext, key.toString());
-    console.log("Decrypted data:", result);
-}
+module.exports = { encrypt, decrypt, generateSecretKey };
