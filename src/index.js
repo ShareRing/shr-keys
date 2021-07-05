@@ -16,6 +16,10 @@ module.exports = {
   createAccount: function (entropy) {
     return Address.create(entropy);
   },
+  createAccountUpdated: function (entropy) {
+    const keypair = KeyPair.KeyPair.fromMnemonicUpdated(entropy);
+    return Address.fromPrivate(keypair.privKey);
+  },
   /*
    * From privateKey, return privateKey, publicKey and address
    */
