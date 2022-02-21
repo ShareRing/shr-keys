@@ -98,7 +98,11 @@ const encrypt = function (publicKey, data, opts) {
     let sharedSecret = ephemKeyPair.derive(otherKeyPair.getPublic())
     
     // Deduce a shared Hash
-    let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: BUG cannnot hash a BN object
+    // let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: cannot use sharedSecret.toString("hex")
+    // as it incorrectly omits the first 0 if any
+    let sharedHash = CryptoJS.SHA512(CryptoJS.enc.Hex.parse(sharedSecret.toBuffer().toString("hex"))).toString()
     
     // encryptionKey is the first 32 bytes
     let encryptionKey = sharedHash.slice(0, 32)
@@ -138,21 +142,49 @@ const decrypt = function (privateKey, ciphertext) {
 
     let sharedSecret = keyPair.derive(ephemKeyPair.getPublic())
 
-    let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: BUG cannnot hash a BN object
+    // let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: cannot use sharedSecret.toString("hex")
+    // as it incorrectly omits the first 0 if any
+    let sharedHash = CryptoJS.SHA512(CryptoJS.enc.Hex.parse(sharedSecret.toBuffer().toString("hex"))).toString()
 
     let encryptionKey = sharedHash.slice(0, 32)
 
     let macKey = sharedHash.slice(32)
 
     let mac = CryptoJS.SHA256(ciphertext.iv + ciphertext.ephemPubKey + ciphertext.ciphertext, macKey).toString()
-
+ 
     if ( mac != ciphertext.mac ) {
         console.log(mac)
         console.log(ciphertext.mac)
         throw Error("Mismatch MAC during ECIES decryption")
     }
 
-    return Symmetric.decrypt(ciphertext.ciphertext, encryptionKey, ciphertext.iv)
+    try {
+        return Symmetric.decrypt(ciphertext.ciphertext, encryptionKey, ciphertext.iv)
+    }
+    catch (err) {
+        // try with old wrong hash for backward compatibility
+        if ((err.message || JSON.stringify(err)).indexOf('Malformed UTF-8 data') > -1) {
+            let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+
+            let encryptionKey = sharedHash.slice(0, 32)
+
+            let macKey = sharedHash.slice(32)
+
+            let mac = CryptoJS.SHA256(ciphertext.iv + ciphertext.ephemPubKey + ciphertext.ciphertext, macKey).toString()
+        
+            if ( mac != ciphertext.mac ) {
+                console.log(mac)
+                console.log(ciphertext.mac)
+                throw Error("Mismatch MAC during ECIES decryption")
+            }
+
+            return Symmetric.decrypt(ciphertext.ciphertext, encryptionKey, ciphertext.iv)
+        }
+
+        throw err
+    }
 }
 
 
