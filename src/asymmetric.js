@@ -16,36 +16,36 @@ const { objToHex, hexToObj } = require('./utils')
  * @return {string} return - hex representation of DER encoded signature
  */
 const sign = (privateKey, data) => {
-  privateKey = Utils.cleanHex(privateKey)
-  let mesHash = CryptoJS.SHA256(data).toString()
-  let privKeyBytes = Utils.hexToBytes(privateKey)
-  let signature = secp256k1.sign(mesHash, privKeyBytes, { canonical: true })
-  return Utils.bytesToHex(signature.toDER())
+    privateKey = Utils.cleanHex(privateKey)
+    let mesHash = CryptoJS.SHA256(data).toString()
+    let privKeyBytes = Utils.hexToBytes(privateKey)
+    let signature = secp256k1.sign(mesHash, privKeyBytes, { canonical: true })
+    return Utils.bytesToHex(signature.toDER())
 }
 
 const signTm = (privateKey, data) => {
-  privateKey = Utils.cleanHex(privateKey)
-  let mesHash = CryptoJS.SHA256(data).toString()
-  let privKeyBytes = Utils.hexToBytes(privateKey)
-  let signature = secp256k1.sign(mesHash, privKeyBytes, {canonical: true})
-  let r = signature.r.toArray()
-  let s = signature.s.toArray()
-  let p = 32 - r.length
-  r = addPadding(p, r)
-  p = 32 - s.length
-  s = addPadding(p, s)
-  return Utils.bytesToHex([...r, ...s])
+    privateKey = Utils.cleanHex(privateKey)
+    let mesHash = CryptoJS.SHA256(data).toString()
+    let privKeyBytes = Utils.hexToBytes(privateKey)
+    let signature = secp256k1.sign(mesHash, privKeyBytes, { canonical: true })
+    let r = signature.r.toArray()
+    let s = signature.s.toArray()
+    let p = 32 - r.length
+    r = addPadding(p, r)
+    p = 32 - s.length
+    s = addPadding(p, s)
+    return Utils.bytesToHex([...r, ...s])
 }
 
 const addPadding = (padLength, data) => {
-  if (padLength > 0) {
-      let pad = []
-      for (let i = 0; i < padLength; i++) {
-          pad = [0, ...pad]
-      }
-      data = [...pad, ...data]
-  }
-  return data
+    if (padLength > 0) {
+        let pad = []
+        for (let i = 0; i < padLength; i++) {
+            pad = [0, ...pad]
+        }
+        data = [...pad, ...data]
+    }
+    return data
 }
 
 
@@ -57,9 +57,9 @@ const addPadding = (padLength, data) => {
  * @return {boolean} true/false
  */
 const verify = (publicKey, data, sig) => {
-  let pubKeyBytes = Utils.hexToBytes(publicKey)
-  let mesHash = CryptoJS.SHA256(data).toString()
-  return secp256k1.verify(mesHash, sig, pubKeyBytes)
+    let pubKeyBytes = Utils.hexToBytes(publicKey)
+    let mesHash = CryptoJS.SHA256(data).toString()
+    return secp256k1.verify(mesHash, sig, pubKeyBytes)
 }
 
 /*
@@ -79,48 +79,49 @@ const verify = (publicKey, data, sig) => {
  * * mac {string} - message authentication code ( 32 bytes = 64 chars )
  *
  */
-const encrypt = function(publicKey, data, opts) {
-  opts = opts || {}
+const encrypt = function (publicKey, data, opts) {
+    opts = opts || {}
 
-  // generate ephemeral private key
-  let ephemPrivKey = opts.ephemPrivKey || Bytes.random(32)
+    // generate ephemeral private key
+    let ephemPrivKey = opts.ephemPrivKey || Bytes.random(32)
 
-  // deduce ephemeral key pair
-  let ephemKeyPair = secp256k1.keyFromPrivate(ephemPrivKey)
+    // deduce ephemeral key pair
+    let ephemKeyPair = secp256k1.keyFromPrivate(ephemPrivKey)
 
-  // key pair of counterpart
-  let otherKeyPair = secp256k1.keyFromPublic(Utils.hexToBytes(publicKey))
+    // key pair of counterpart
+    let otherKeyPair = secp256k1.keyFromPublic(Utils.hexToBytes(publicKey))
 
-  // Derive sharedSecret using ECDH
-  let sharedSecret = ephemKeyPair.derive(otherKeyPair.getPublic())
+    // Derive sharedSecret using ECDH
+    let sharedSecret = ephemKeyPair.derive(otherKeyPair.getPublic())
 
-  // Deduce a shared Hash
-  let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Deduce a shared Hash
+    // Alex: BUG cannnot hash a BN object
+    // let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: cannot use sharedSecret.toString("hex")
+    // as it incorrectly omits the first 0 if any
+    let sharedHash = CryptoJS.SHA512(CryptoJS.enc.Hex.parse(sharedSecret.toBuffer().toString("hex"))).toString()
 
-  // encryptionKey is the first 32 bytes
-  let encryptionKey = sharedHash.slice(0, 32)
+    // encryptionKey is the first 32 bytes
+    let encryptionKey = sharedHash.slice(0, 32)
 
-  // macKey is the last 32 byte
-  let macKey = sharedHash.slice(32)
+    // macKey is the last 32 byte
+    let macKey = sharedHash.slice(32)
 
-  // Initialization vector
-  let iv = opts.iv || Bytes.random(16)
+    // Initialization vector
+    let iv = opts.iv || Bytes.random(16)
 
-  // ciphertext is aes256 using CTR
-  let ciphertext = Symmetric.encrypt(data, encryptionKey, iv)
+    // ciphertext is aes256 using CTR
+    let ciphertext = Symmetric.encrypt(data, encryptionKey, iv)
 
-  // compute Mac
-  let mac = CryptoJS.SHA256(
-    iv + ephemKeyPair.getPublic(false, 'hex') + ciphertext,
-    macKey
-  ).toString()
+    // compute Mac
+    let mac = CryptoJS.SHA256(iv + ephemKeyPair.getPublic(false, 'hex') + ciphertext, macKey).toString()
 
-  return JSON.stringify({
-    iv: iv,
-    ephemPubKey: ephemKeyPair.getPublic(false, 'hex'),
-    ciphertext: ciphertext,
-    mac: mac
-  })
+    return JSON.stringify({
+        iv: iv,
+        ephemPubKey: ephemKeyPair.getPublic(false, 'hex'),
+        ciphertext: ciphertext,
+        mac: mac
+    })
 }
 
 /*
@@ -129,144 +130,153 @@ const encrypt = function(publicKey, data, opts) {
  * @param {string} ciphertext - message to be decrypted
  * @return {string} plaintext
  */
-const decrypt = function(privateKey, ciphertext) {
-  ciphertext = JSON.parse(ciphertext)
+const decrypt = function (privateKey, ciphertext) {
+    ciphertext = JSON.parse(ciphertext)
 
-  let keyPair = secp256k1.keyFromPrivate(privateKey)
+    let keyPair = secp256k1.keyFromPrivate(privateKey)
 
-  let ephemKeyPair = secp256k1.keyFromPublic(
-    Utils.hexToBytes(ciphertext.ephemPubKey)
-  )
+    let ephemKeyPair = secp256k1.keyFromPublic(
+        Utils.hexToBytes(ciphertext.ephemPubKey)
+    )
 
-  let sharedSecret = keyPair.derive(ephemKeyPair.getPublic())
+    let sharedSecret = keyPair.derive(ephemKeyPair.getPublic())
 
-  let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: BUG cannnot hash a BN object
+    // let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
+    // Alex: cannot use sharedSecret.toString("hex")
+    // as it incorrectly omits the first 0 if any
+    let sharedHash = CryptoJS.SHA512(CryptoJS.enc.Hex.parse(sharedSecret.toBuffer().toString("hex"))).toString()
 
-  let encryptionKey = sharedHash.slice(0, 32)
+    let encryptionKey = sharedHash.slice(0, 32)
 
-  let macKey = sharedHash.slice(32)
+    let macKey = sharedHash.slice(32)
 
-  let mac = CryptoJS.SHA256(
-    ciphertext.iv + ciphertext.ephemPubKey + ciphertext.ciphertext,
-    macKey
-  ).toString()
+    let mac = CryptoJS.SHA256(ciphertext.iv + ciphertext.ephemPubKey + ciphertext.ciphertext, macKey).toString()
 
-  if (mac != ciphertext.mac) {
-    console.log(mac)
-    console.log(ciphertext.mac)
-    throw Error('Mismatch MAC during ECIES decryption')
-  }
+    if (mac != ciphertext.mac) {
+        console.log(mac)
+        console.log(ciphertext.mac)
+        throw Error("Mismatch MAC during ECIES decryption")
+    }
 
-  return Symmetric.decrypt(ciphertext.ciphertext, encryptionKey, ciphertext.iv)
-}
+    try {
+        return Symmetric.decrypt(ciphertext.ciphertext, encryptionKey, ciphertext.iv)
+    }
+    catch (err) {
+        // try with old wrong hash for backward compatibility
+        if ((err.message || JSON.stringify(err)).indexOf('Malformed UTF-8 data') > -1) {
+            let sharedHash = CryptoJS.SHA512(sharedSecret).toString()
 
-const eccEncrypt = async (pubKey, message) => {
-  if (typeof pubKey === 'string') {
-    pubKey = Buffer.from(pubKey, 'hex')
-  }
-  if (typeof message === 'string') {
-    message = Buffer.from(message)
-  }
-  let encrypted
-  try {
-    encrypted = await eccrypto.encrypt(pubKey, message)
-  } catch (e) {
-    throw e
-  }
-  return objToHex(encrypted)
+            let encryptionKey = sharedHash.slice(0, 32)
+
+            let macKey = sharedHash.slice(32)
+
+            let mac = CryptoJS.SHA256(ciphertext.iv + ciphertext.ephemPubKey + ciphertext.ciphertext, macKey).toString()
+
+            if (mac != ciphertext.mac) {
+                console.log(mac)
+                console.log(ciphertext.mac)
+                throw Error("Mismatch MAC during ECIES decryption")
+            }
+
+            return Symmetric.decrypt(ciphertext.ciphertext, encryptionKey, ciphertext.iv)
+        }
+
+        throw err
+    }
 }
 
 const eccDecrypt = async (privKey, cipherText) => {
-  if (typeof privKey === 'string') {
-    privKey = Buffer.from(privKey, 'hex')
-  }
-  if (typeof cipherText === 'string') {
-    cipherText = hexToObj(cipherText)
-  }
-  let decrypted
-  try {
-    decrypted = await eccrypto.decrypt(privKey, cipherText)
-  } catch (e) {
-    throw e
-  }
-  return decrypted.toString()
+    if (typeof privKey === 'string') {
+        privKey = Buffer.from(privKey, 'hex')
+    }
+    if (typeof cipherText === 'string') {
+        cipherText = hexToObj(cipherText)
+    }
+    let decrypted
+    try {
+        decrypted = await eccrypto.decrypt(privKey, cipherText)
+    } catch (e) {
+        throw e
+    }
+    return decrypted.toString()
 }
 
 module.exports = {
-  sign,
-  signTm,
-  verify,
-  encrypt,
-  decrypt,
-  eccEncrypt,
-  eccDecrypt
+    sign,
+    signTm,
+    verify,
+    encrypt,
+    decrypt,
+    eccEncrypt,
+    eccDecrypt
 }
 
 if (require.main == module) {
-  const address = require('./address')
+    const address = require('./address')
 
-  // Sign
-  let privateKey =
-    'ab83994cf95abe45b9d8610524b3f8f8fd023d69f79449011cb5320d2ca180c5'
-  let res = address.fromPrivate(privateKey)
+    // Sign
+    let privateKey =
+        'ab83994cf95abe45b9d8610524b3f8f8fd023d69f79449011cb5320d2ca180c5'
+    let res = address.fromPrivate(privateKey)
 
-  console.log('Address:', res.address)
-  console.log('PubKey:', res.publicKey)
+    console.log('Address:', res.address)
+    console.log('PubKey:', res.publicKey)
 
-  let createTx = {
-    //"creator":"CF54B74BB4AC9380BFF00F2BE911FC61E541C635",
-    creator: res.address.toUpperCase(),
-    hash: 'MTExMTEx',
-    uuid: '112233',
-    status: true,
-    fee: 1
-  }
-
-  let message = JSON.stringify(createTx)
-  console.log('Message:', message)
-  let signature = sign(privateKey, message)
-  console.log('Sig:', signature)
-
-  // Verify
-  const ecKey = secp256k1.keyFromPrivate(privateKey)
-  let mesHash = CryptoJS.SHA256(message).toString()
-  let pubKey = ecKey.getPublic(false, 'hex')
-  pkBytes = Utils.hexToBytes(pubKey)
-  console.log('Verify', secp256k1.verify(mesHash, signature, pkBytes))
-
-  console.log('PubKey:', res.publicKey)
-
-  let ciphertext = encrypt(res.publicKey, 'abcc')
-  console.log(ciphertext)
-
-  let plaintext = decrypt(res.privateKey, ciphertext)
-  console.log(plaintext)
-
-  let bytesToByteString = function(bytesArray) {
-    let res = ''
-    for (let i = 0; i < bytesArray.length; i++) {
-      if (bytesArray[i] > 255) {
-        console.log('Invalid:', i, bytesArray[i])
-      }
-      res += String.fromCharCode(bytesArray[i])
+    let createTx = {
+        //"creator":"CF54B74BB4AC9380BFF00F2BE911FC61E541C635",
+        creator: res.address.toUpperCase(),
+        hash: 'MTExMTEx',
+        uuid: '112233',
+        status: true,
+        fee: 1
     }
-    return res
-  }
 
-  // test length of ciphertext in comparison with plaintext
-  // fs cause asyncstorage-down error
-  //let base64 = require("base-64")
-  //let fs = require('fs')
+    let message = JSON.stringify(createTx)
+    console.log('Message:', message)
+    let signature = sign(privateKey, message)
+    console.log('Sig:', signature)
 
-  //let content = fs.readFileSync('./README.md')
-  //let bs = bytesToByteString(content)
-  //let b64 = base64.encode(bs)
+    // Verify
+    const ecKey = secp256k1.keyFromPrivate(privateKey)
+    let mesHash = CryptoJS.SHA256(message).toString()
+    let pubKey = ecKey.getPublic(false, 'hex')
+    pkBytes = Utils.hexToBytes(pubKey)
+    console.log('Verify', secp256k1.verify(mesHash, signature, pkBytes))
 
-  //console.log("Original length:", bs.length, "Base64 length:", b64.length)
+    console.log('PubKey:', res.publicKey)
 
-  //ciphertext = encrypt(res.publicKey, b64);
-  //console.log("Ciphertext length:", ciphertext.length)
+    let ciphertext = encrypt(res.publicKey, 'abcc')
+    console.log(ciphertext)
 
-  //plaintext = decrypt(res.privateKey, ciphertext)
-  //console.log(base64.decode(plaintext).length)
+    let plaintext = decrypt(res.privateKey, ciphertext)
+    console.log(plaintext)
+
+    let bytesToByteString = function (bytesArray) {
+        let res = ''
+        for (let i = 0; i < bytesArray.length; i++) {
+            if (bytesArray[i] > 255) {
+                console.log('Invalid:', i, bytesArray[i])
+            }
+            res += String.fromCharCode(bytesArray[i])
+        }
+        return res
+    }
+
+    // test length of ciphertext in comparison with plaintext
+    // fs cause asyncstorage-down error
+    //let base64 = require("base-64")
+    //let fs = require('fs')
+
+    //let content = fs.readFileSync('./README.md')
+    //let bs = bytesToByteString(content)
+    //let b64 = base64.encode(bs)
+
+    //console.log("Original length:", bs.length, "Base64 length:", b64.length)
+
+    //ciphertext = encrypt(res.publicKey, b64);
+    //console.log("Ciphertext length:", ciphertext.length)
+
+    //plaintext = decrypt(res.privateKey, ciphertext)
+    //console.log(base64.decode(plaintext).length)
 }
