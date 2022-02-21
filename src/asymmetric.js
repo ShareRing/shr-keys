@@ -186,6 +186,22 @@ const decrypt = function (privateKey, ciphertext) {
     }
 }
 
+const eccEncrypt = async (pubKey, message) => {
+    if (typeof pubKey === 'string') {
+        pubKey = Buffer.from(pubKey, 'hex')
+    }
+    if (typeof message === 'string') {
+        message = Buffer.from(message)
+    }
+    let encrypted
+    try {
+        encrypted = await eccrypto.encrypt(pubKey, message)
+    } catch (e) {
+        throw e
+    }
+    return objToHex(encrypted)
+}
+
 const eccDecrypt = async (privKey, cipherText) => {
     if (typeof privKey === 'string') {
         privKey = Buffer.from(privKey, 'hex')
